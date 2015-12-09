@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://skipsuva.github.io/sitemap.xml 

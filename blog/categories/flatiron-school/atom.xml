@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
+  <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
+  <link href="http://skipsuva.github.io/"/>
+  <updated>2015-12-09T14:50:32-05:00</updated>
+  <id>http://skipsuva.github.io/</id>
+  <author>
+    <name><![CDATA[Skip Suva]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[First Post]]></title>
+    <link href="http://skipsuva.github.io/blog/2015/12/09/first-post/"/>
+    <updated>2015-12-09T14:48:39-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2015/12/09/first-post</id>
+    <content type="html"><![CDATA[<p>&ldquo;Welcome to the technical Blog of Skip Suva.  Over (at least) the next three months, I will be adding posts periodically and writing about topics that interest, confuse, and frustrate me - with the hope that doing so will not only enlighten a reader or two, but also ensure I master that domain.&rdquo;</p>
+]]></content>
+  </entry>
+  
+</feed>
