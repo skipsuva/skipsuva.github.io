@@ -4,7 +4,7 @@
   <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2015-12-11T08:47:23-05:00</updated>
+  <updated>2015-12-11T09:02:12-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -34,20 +34,20 @@
 <pre><code class="ruby">def page_scraper
     @reading_list = []
     @url_list.each do |url|
-      html = open(url)
-      doc = Nokogiri::HTML(html)
-      titles = doc.css(".title &gt; a")
-      score = nil
-      comment_num = nil
-      titles.each do |title_data|
-        title = title_data.text[0..10]
-        url = title_data.attribute("href").value
-        subtexts = title_data.parent.parent.next.css(".subtext")
-        subtexts.each do |subtext_line|
-          score = subtext_line.css('.score').text.gsub(" points","").to_i
-          comment_num = subtext_line.css('a').text.scan(/\d+ comments/).join.scan(/[0-9]+/).join.to_i
-        end
-        @reading_list &lt;&lt; {article_title: title, link: url, points: score, comments: comment_num}
+        html = open(url)
+        doc = Nokogiri::HTML(html)
+        titles = doc.css(".title &gt; a")
+        score = nil
+        comment_num = nil
+        titles.each do |title_data|
+            title = title_data.text[0..10]
+            url = title_data.attribute("href").value
+            subtexts = title_data.parent.parent.next.css(".subtext")
+            subtexts.each do |subtext_line|
+                score = subtext_line.css('.score').text.gsub(" points","").to_i
+                comment_num = subtext_line.css('a').text.scan(/\d+ comments/).join.scan(/[0-9]+/).join.to_i
+            end
+          @reading_list &lt;&lt; {article_title: title, link: url, points: score, comments: comment_num}
       end
     end
   end
