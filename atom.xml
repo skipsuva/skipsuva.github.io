@@ -4,7 +4,7 @@
   <title><![CDATA[Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2015-12-11T09:02:12-05:00</updated>
+  <updated>2015-12-11T09:03:28-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -52,7 +52,7 @@
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">page_scraper</span>
-</span><span class='line'>    <span class="vi">@reading_list</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="vi">@reading_list</span> <span class="o">=</span> <span class="o">[</span> <span class="o">]</span>
 </span><span class='line'>    <span class="vi">@url_list</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">url</span><span class="o">|</span>
 </span><span class='line'>        <span class="n">html</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 </span><span class='line'>        <span class="n">doc</span> <span class="o">=</span> <span class="no">Nokogiri</span><span class="o">::</span><span class="no">HTML</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>

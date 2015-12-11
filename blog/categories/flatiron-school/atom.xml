@@ -4,7 +4,7 @@
   <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2015-12-11T09:02:12-05:00</updated>
+  <updated>2015-12-11T09:03:28-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -32,7 +32,7 @@
 <p>I got some excellent pointers from <a href="www.example.com">Dave Flaherty</a> on how to do just that, utilizing the &lsquo;.parent&rsquo; Nokogiri module method.  See the scraper method below:</p>
 
 <pre><code class="ruby">def page_scraper
-    @reading_list = []
+    @reading_list = [ ]
     @url_list.each do |url|
         html = open(url)
         doc = Nokogiri::HTML(html)
