@@ -4,7 +4,7 @@
   <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2015-12-09T15:00:41-05:00</updated>
+  <updated>2015-12-11T08:47:23-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Web Scraping & Hacker News]]></title>
+    <link href="http://skipsuva.github.io/blog/2015/12/11/hacker-new-must-read/"/>
+    <updated>2015-12-11T06:53:51-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2015/12/11/hacker-new-must-read</id>
+    <content type="html"><![CDATA[<p>After covering basic web scraping in class, I thought it would be fun to get some additional practice scraping a live website and to create a simple, useful app with the result.  The premise is pretty straightforward, but offers a feature not easily gleaned from simply visiting the <a href="https://news.ycombinator.com/">Hacker News</a> website - the program compares <em>both</em> each article&rsquo;s Reddit-style point count with the quantity of comments.  After identifying that article, it launches the webpage automatically from the console.  See below for a repository link to &lsquo;Must Read Hacker News.&rsquo;</p>
+
+<!-- more -->
+
+
+<p>Utilizing the <a href="https://rubygems.org/gems/nokogiri/versions/1.6.7">Nokogiri gem</a>, I parse 4 pages of Hacker News, identifying the necessary css selectors and assigning to an array of hashes.  From there, it&rsquo;s a simple each loop in the &lsquo;calculator&rsquo; method to identify the one article with the highest point score and highest comment count.</p>
+
+<p>The main challenge I ran into was identifying a way to navigate the structure of the website - articles on Hacker News are arranged in a non-nested table, meaning getting from title/link to point count and comments wasn&rsquo;t as easy as I had anticipated.  Shown below is a visualization of what I mean - the table row that holds the subtext is not nested in the title table row, instead it is just the next <tr>.</p>
+
+<p><img align="clear" src="http://s12.postimg.org/7t4f9xg6l/Screen_Shot_2015_12_11_at_8_29_48_AM.png" width="500"/></p>
+
+<p>I got some excellent pointers from <a href="www.example.com">Dave Flaherty</a> on how to do just that, utilizing the &lsquo;.parent&rsquo; Nokogiri module method.  See the scraper method below:</p>
+
+<pre><code class="ruby">def page_scraper
+    @reading_list = []
+    @url_list.each do |url|
+      html = open(url)
+      doc = Nokogiri::HTML(html)
+      titles = doc.css(".title &gt; a")
+      score = nil
+      comment_num = nil
+      titles.each do |title_data|
+        title = title_data.text[0..10]
+        url = title_data.attribute("href").value
+        subtexts = title_data.parent.parent.next.css(".subtext")
+        subtexts.each do |subtext_line|
+          score = subtext_line.css('.score').text.gsub(" points","").to_i
+          comment_num = subtext_line.css('a').text.scan(/\d+ comments/).join.scan(/[0-9]+/).join.to_i
+        end
+        @reading_list &lt;&lt; {article_title: title, link: url, points: score, comments: comment_num}
+      end
+    end
+  end
+</code></pre>
+
+<hr />
+
+<p>Future improvements could include:<br/>
+- Building out an interactive CLI app that allows for user engagement (e.g. &ldquo;how many pages would you like to parse?&rdquo;, &ldquo;Would you like to see the article with the most points/comments/both?&rdquo;, etc.).<br/>
+- Investigating the use of Hacker News' API to allow for more robust information usage.<br/>
+- Integrating other relevant news sites (e.g. top Reddit post, top io9 article, etc).</p>
+
+<p>For the curious, you can find the repo here: <a href="https://github.com/skipsuva/must-read-hacker-news">Must Read Hacker News</a>.  Feedback and suggestions are welcome!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A Peek into the Black Magic that is RegEx]]></title>
@@ -81,7 +132,7 @@
     <link href="http://skipsuva.github.io/blog/2015/12/09/first-post/"/>
     <updated>2015-12-09T14:48:39-05:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/09/first-post</id>
-    <content type="html"><![CDATA[<p>&ldquo;Welcome to the technical Blog of Skip Suva.  Over (at least) the next three months, I will be adding posts periodically and writing about topics that interest, confuse, and frustrate me - with the hope that doing so will not only enlighten a reader or two, but also ensure I master that domain.&rdquo;</p>
+    <content type="html"><![CDATA[<p>Welcome to the technical Blog of Skip Suva.  Over (at least) the next three months, I will be adding posts periodically and writing about topics that interest, confuse, and frustrate me - with the hope that doing so will not only enlighten a reader or two, but also ensure I master that domain.</p>
 ]]></content>
   </entry>
   
