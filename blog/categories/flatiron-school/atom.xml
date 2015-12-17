@@ -4,7 +4,7 @@
   <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2015-12-11T09:03:28-05:00</updated>
+  <updated>2015-12-17T11:21:36-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -29,7 +29,7 @@
 
 <p><img align="clear" src="http://s12.postimg.org/7t4f9xg6l/Screen_Shot_2015_12_11_at_8_29_48_AM.png" width="500"/></p>
 
-<p>I got some excellent pointers from <a href="www.example.com">Dave Flaherty</a> on how to do just that, utilizing the &lsquo;.parent&rsquo; Nokogiri module method.  See the scraper method below:</p>
+<p>I got some excellent pointers from <a href="http://flats.github.io/">Dave Flaherty</a> on how to do just that, utilizing the &lsquo;.parent&rsquo; Nokogiri module method.  See the scraper method below:</p>
 
 <pre><code class="ruby">def page_scraper
     @reading_list = [ ]
