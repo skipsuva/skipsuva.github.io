@@ -4,7 +4,7 @@
   <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2015-12-17T11:21:36-05:00</updated>
+  <updated>2015-12-17T11:22:41-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -12,6 +12,112 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Singleton Classes: The Class' Estranged Uncle]]></title>
+    <link href="http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes/"/>
+    <updated>2015-12-15T06:34:53-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes</id>
+    <content type="html"><![CDATA[<p>As we continue to climb further down the rabbit hole that is object oriented programming, the sheer magnitude of my ignorance is becoming more clear everyday - and I have a feeling I should start getting comfortable existing in this state of &ldquo;conscious incompetence&rdquo; for a while.  One thing I continue to find myself uncomfortable with is separate class object interactions - the thought of doing another &ldquo;Artist-Song-Genre&rdquo; lab makes me dry-heave.  As such, I thought it would be a good exercise to try and dig into a related topic and work to better understand class interactions.</p>
+
+<!-- more -->
+
+
+<p>We&rsquo;ve seen the use of <strong>singleton methods</strong> before, and on the surface they look pretty straightforward - you simply define a particular method directly on the desired object, after which <em>only</em> that object can have that method called on it:<br/>
+<code>ruby
+actor = "Leonardo DiCaprio"
+def actor.oscar
+  self + " will never win an Oscar"
+end
+actor.oscar                       #==&gt; "Leonardo DiCaprio will never win an Oscar"
+"Matthew McConaughey".oscar  #==&gt; NoMethodError: undefined method `twice' for "string":String
+</code><br/>
+Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment and consider something we&rsquo;ve discussed a number of times in class - the concept of abstraction in our code.  The strategy above, while legitimate, is about as literal as we could have made it.  You may not be surprised to learn that Ruby has an answer for us - and it is related to <em>where</em> a singleton method actually lives.</p>
+
+<p>It is here we are introduced to a shadow-like, step-brother class (or creepy, estranged uncle).  At instanciation, every object is actually born with <em>two</em> classes - the class that it is an instance in, and its singleton class.  At the time of their creation, they have no name, and are effectively anonymous until explicitly called upon.  David A. Black, of the &ldquo;Well Grounded Rubyist,&rdquo; has a slightly less sinister-sounding explanation:</p>
+
+<blockquote><p><em>You can think of an object’s singleton class as an exclusive stash of methods, tailor-made for that object and not shared with other objects—not even with other instances of the object’s class.</em>
+- David A. Black</p></blockquote>
+
+<p>The next questions to explore are when and how we as programmers should be interacting with our objects' singleton classes.  Imagine you have an object - an instance of a particular class that you know you want to act in unique ways - creating a whole collection of singleton methods for this class instance would look terribly messy and as mentioned before, wouldn&rsquo;t be very abstract - if your program had to change down the road, you&rsquo;d have to make sure you changed the object keyword on every single one.</p>
+
+<p>Ruby, of course, has an elegant and efficient solution for this problem. The singleton class for a particular object can be defined for multiple methods using the following syntax:</p>
+
+<pre><code class="ruby">class Person
+  def lunchtime
+    "I eat hamburgers for lunch."
+  end
+end
+
+chad = Person.new
+roger = Person.new
+chad.lunchtime     #==&gt; "I eat hamburgers for lunch."
+roger.lunchtime    #==&gt; "I eat hamburgers for lunch."
+
+class &lt;&lt; roger
+  def lunchtime
+    "I eat hay for lunch."
+  end
+
+  def bedtime
+    "I sleep in a stable."
+  end
+
+  def confession
+    "I'm actually a horse."
+  end
+end
+
+chad.lunchtime     #==&gt; "I eat hamburgers for lunch."
+roger.lunchtime    #==&gt; "I eat hay for lunch."
+chad.bedtime       #==&gt; NoMethodError: undefined method `bedtime' for #&lt;Person:0x007fa98a1fdfe8&gt;
+roger.bedtime      #==&gt; "I sleep in a stable."
+roger.confession   #==&gt; "I'm actually a horse."
+</code></pre>
+
+<p>As you can see, by using the singleton class assignment notation to &lsquo;require&rsquo; it, we&rsquo;re able to bring Roger&rsquo;s singleton class and its associated behaviors out of the shadows in an efficient way.</p>
+
+<p>A frequent use of this concept and syntax in Ruby programming involves streamlining something we already have some experience with - defining class-specific methods.  Up until this point, we&rsquo;ve assigned class methods in a very similar way to that of singleton methods:</p>
+
+<p><code>def self.all; end</code> or <code>def self.most_expensive; end</code></p>
+
+<p>This works, but by incorporating the syntax we just learned, we can streamline class method assignment by relying on its singleton class:
+```ruby
+class Artist</p>
+
+<p>  class &lt;&lt; self
+    def all
+      @@all | |= [ ]
+    end</p>
+
+<pre><code>def create(artist_name)
+  new_artist = Artist.new(artist_name)
+  new_artist.save
+  new_artist
+end
+
+def destroy_all
+  all.clear
+end
+</code></pre>
+
+<p>  end
+  # begin regular class methods
+  def add_song(song)
+    &hellip; .
+  end
+  &hellip; .
+end
+<code>``
+In this example, because we're assigning the Artist's singleton class inside the body of the class, we're able to utilize 'self, ' and save ourselves some typing and potentially unorganized code. </code>class &lt;&lt; self<code>inside the body is equivalent to</code>class &lt;&lt; Artist` outside the body.</p>
+
+<p><img style="margin-right: 2em" align="left"  src="http://s10.postimg.org/lr45byvcp/Screen_Shot_2015_12_16_at_7_02_08_AM.png" width="300"/></p>
+
+<p>The last thing we&rsquo;ll look at is, which is likely obvious at this point, is how singleton classes fit into the method lookup chain:</p>
+
+<p>As you can see to the left, the object (an instance of class D) first checks its singleton class for the method in question before any modules or its parent class.  From here, the list of possible uses goes on - you are able to even able to incorporate modules in your singleton classes for further class instance customization&hellip;but we&rsquo;ll leave that for another day.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Web Scraping & Hacker News]]></title>
