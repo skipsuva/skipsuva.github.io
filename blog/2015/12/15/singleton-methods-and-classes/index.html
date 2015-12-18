@@ -5,7 +5,7 @@
 	<script data-cfasync="false" type="text/javascript" src="//use.typekit.net/axj3cfp.js"></script>
 	<script data-cfasync="false" type="text/javascript">try{Typekit.load();}catch(e){}</script>
 	<meta charset="utf-8">
-	<title>Singleton Classes: The Class' Estranged Uncle  | Skip_Skillset.push('Ruby')</title>
+	<title>Singleton Classes: The Class' Mysterious, Estranged Uncle  | Skip_Skillset.push('Ruby')</title>
 
 <meta name="author" content="Skip Suva"> 
 
@@ -97,7 +97,7 @@ $(document).ready(
 </header>
 
 	<div id="content" class="inner"><article class="post">
-	<h2 class="title">Singleton Classes: The Class' Estranged Uncle</h2>
+	<h2 class="title">Singleton Classes: The Class' Mysterious, Estranged Uncle</h2>
 	<div class="entry-content"><p>As we continue to climb further down the rabbit hole that is object oriented programming, the sheer magnitude of my ignorance is becoming more clear everyday - and I have a feeling I should start getting comfortable existing in this state of &ldquo;conscious incompetence&rdquo; for a while.  One thing I continue to find myself uncomfortable with is separate class object interactions - the thought of doing another &ldquo;Artist-Song-Genre&rdquo; lab makes me dry-heave.  As such, I thought it would be a good exercise to try and dig into a related topic and work to better understand class interactions.</p>
 
 <!-- more -->
@@ -116,14 +116,14 @@ $(document).ready(
 </span><span class='line'>  <span class="nb">self</span> <span class="o">+</span> <span class="s2">&quot; will never win an Oscar&quot;</span>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'><span class="n">actor</span><span class="o">.</span><span class="n">oscar</span>                       <span class="c1">#==&gt; &quot;Leonardo DiCaprio will never win an Oscar&quot;</span>
-</span><span class='line'><span class="s2">&quot;Matthew McConaughey&quot;</span><span class="o">.</span><span class="n">oscar</span>  <span class="c1">#==&gt; NoMethodError: undefined method `twice&#39; for &quot;string&quot;:String</span>
+</span><span class='line'><span class="s2">&quot;Matthew McConaughey&quot;</span><span class="o">.</span><span class="n">oscar</span>  <span class="c1">#==&gt; NoMethodError: undefined method `oscar&#39; for &quot;Matthew McConaughey&quot;:String</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>
 Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment and consider something we&rsquo;ve discussed a number of times in class - the concept of abstraction in our code.  The strategy above, while legitimate, is about as literal as we could have made it.  You may not be surprised to learn that Ruby has an answer for us - and it is related to <em>where</em> a singleton method actually lives.</p>
 
-<p>It is here we are introduced to a shadow-like, step-brother class (or creepy, estranged uncle).  At instanciation, every object is actually born with <em>two</em> classes - the class that it is an instance in, and its singleton class.  At the time of their creation, they have no name, and are effectively anonymous until explicitly called upon.  David A. Black, of the &ldquo;Well Grounded Rubyist,&rdquo; has a slightly less sinister-sounding explanation:</p>
+<p>It is here we are introduced to a shadow-like, creepy, estranged-uncle class.  At instanciation, every object is actually born with <em>two</em> classes - the class that it is an instance in, and its singleton class.  At the time of their creation, they have no name, and are effectively anonymous until explicitly called upon.  David A. Black, of the &ldquo;Well Grounded Rubyist,&rdquo; has a slightly less sinister-sounding explanation:</p>
 
 <blockquote><p><em>You can think of an object’s singleton class as an exclusive stash of methods, tailor-made for that object and not shared with other objects—not even with other instances of the object’s class.</em>
 - David A. Black</p></blockquote>

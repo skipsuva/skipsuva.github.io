@@ -4,7 +4,7 @@
   <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2015-12-17T11:22:41-05:00</updated>
+  <updated>2015-12-18T11:47:08-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Singleton Classes: The Class' Estranged Uncle]]></title>
+    <title type="html"><![CDATA[Singleton Classes: The Class' Mysterious, Estranged Uncle]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes/"/>
     <updated>2015-12-15T06:34:53-05:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes</id>
@@ -30,11 +30,11 @@ def actor.oscar
   self + " will never win an Oscar"
 end
 actor.oscar                       #==&gt; "Leonardo DiCaprio will never win an Oscar"
-"Matthew McConaughey".oscar  #==&gt; NoMethodError: undefined method `twice' for "string":String
+"Matthew McConaughey".oscar  #==&gt; NoMethodError: undefined method `oscar' for "Matthew McConaughey":String
 </code><br/>
 Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment and consider something we&rsquo;ve discussed a number of times in class - the concept of abstraction in our code.  The strategy above, while legitimate, is about as literal as we could have made it.  You may not be surprised to learn that Ruby has an answer for us - and it is related to <em>where</em> a singleton method actually lives.</p>
 
-<p>It is here we are introduced to a shadow-like, step-brother class (or creepy, estranged uncle).  At instanciation, every object is actually born with <em>two</em> classes - the class that it is an instance in, and its singleton class.  At the time of their creation, they have no name, and are effectively anonymous until explicitly called upon.  David A. Black, of the &ldquo;Well Grounded Rubyist,&rdquo; has a slightly less sinister-sounding explanation:</p>
+<p>It is here we are introduced to a shadow-like, creepy, estranged-uncle class.  At instanciation, every object is actually born with <em>two</em> classes - the class that it is an instance in, and its singleton class.  At the time of their creation, they have no name, and are effectively anonymous until explicitly called upon.  David A. Black, of the &ldquo;Well Grounded Rubyist,&rdquo; has a slightly less sinister-sounding explanation:</p>
 
 <blockquote><p><em>You can think of an object’s singleton class as an exclusive stash of methods, tailor-made for that object and not shared with other objects—not even with other instances of the object’s class.</em>
 - David A. Black</p></blockquote>
