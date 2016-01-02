@@ -4,7 +4,7 @@
   <title><![CDATA[Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2015-12-18T11:49:19-05:00</updated>
+  <updated>2016-01-02T09:17:54+00:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -14,9 +14,71 @@
 
   
   <entry>
+    <title type="html"><![CDATA[SQL Injections & You]]></title>
+    <link href="http://skipsuva.github.io/blog/2016/01/01/sql-injections-and-you/"/>
+    <updated>2016-01-01T22:34:34+00:00</updated>
+    <id>http://skipsuva.github.io/blog/2016/01/01/sql-injections-and-you</id>
+    <content type="html"><![CDATA[<p>Before diving headlong into the magic of ActiveRecord, our class spend a few days learning the basics of SQL - practicing basic queries, joins etc. - as well as beginning a much longer discussion around data-driven applications.  A topic that came up briefly piqued my interest: the strangely biological/viral-sounding &lsquo;SQL Injection&rsquo; - a malicious action someone can take against an unprepared database to acquire information, or (sometimes) worse, destroy the data.  We spent much more time discussing the &lsquo;sterilization&rsquo; of code to prevent such vulnerabilities than the actual mechanics of an attack, so I thought it would be worth while to learn more.</p>
+
+<!-- more -->
+
+
+<p>Essentially all consumer software applications are based on top of databases - they&rsquo;re used to keep track of user accounts, user preferences, user passwords, bank account numbers&hellip;the list goes on.  At the most basic level, the way software interacts with its databases is pretty similar: when information is needed, a query (in one form or another) is sent to the database and the requested information is transmitted back.  Depending on how the software is written, this query can be much more accessible than one might imagine.  Let&rsquo;s look at a potential example:</p>
+
+<p>Your favorite social media website Facetagram asks you for your username and password in order to authenticate you and allow you to access/view your posts and friends.  It&rsquo;s quite possible that these two fields (username and password) are wired to the &ldquo;User Login&rdquo; table of the Facetagram relational database, which means when you plug your credentials in and hit &lsquo;enter,&rsquo; the SQL query sent might look like something similar to this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>uName = getRequestString("UserName");
+</span><span class='line'>uPass = getRequestString("UserPass");
+</span><span class='line'>
+</span><span class='line'>sql = "SELECT * FROM Users WHERE Name ='" + uName + "' AND Pass ='" + uPass + "'"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, the user&rsquo;s entries are assigned to variables which are then directly used in the query to access the user&rsquo;s data.  Seeing these mechanics, someone without much SQL experience could reasonably believe that the data is safe because a user must enter in the correct password - we&rsquo;ve all had to re-enter our credentials when we have a type logging into a site!  However, this is not necessarily true (at least in this elementary example).</p>
+
+<p>An SQL Injection is a technique that leverages specific syntactic patterns found in SQL interactions with relational databases to gain access to information that would otherwise be unavailable.  Such injections can allow someone to log into other peoples accounts, change or extract data, and even drop entire databases.</p>
+
+<p><img src="http://danieldafoe.com/res/sticker-sql-injection.png" alt="" /></p>
+
+<p>Going back to the example outlined above, a savvy individual could enter <code>" or ""="</code> into the username/password entry fields, which would create the following valid SQL query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SELECT * FROM Users WHERE Name ="" or ""="" AND Pass ="" or ""=""</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because <code>WHERE ""=""</code> always evaluates as true, this SQL injection would return all rows of the Users table to the hacker, exposing the information of potentially thousands of users.</p>
+
+<p>This is pretty scary stuff, given how easily (again, in this elementary example) this can be executed.  However, developers can protect their code&hellip;and their databases.  Using a technique called sterilization, the susceptible syntax can be substituted in the query with question marks (or other symbols, I believe) and the user-entered variables are called on at the time of execution.  By passing the user entries in as such, SQL does some behind the scenes magic, encapsulating the entry into a sting, ensuring no special characters are able to affect the query&hellip;like ones that were used above.  Using this method, the code example from above could be refactored into:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>uName = getRequestString("UserName");
+</span><span class='line'>uPass = getRequestString("UserPass");
+</span><span class='line'>
+</span><span class='line'>sql = "SELECT * FROM Users WHERE Name ='" + ? + "' AND Pass ='" + ? + "'"
+</span><span class='line'>
+</span><span class='line'>db.Execute(sql, uName, uPass)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If our hacker tried the same SQL injection now, their entry would be rejected by the system because it would look like this: <code>""" or ""=""</code></p>
+
+<p>Despite being preventable, SQL Injection attacks against large companies are very common.  Companies such as VTech, TalkTalk, Planned Parenthood, MySQL Servers, and University of Sydney are just a handful of those hit&hellip;in 2015 alone.  In the past 4 years, the likes of Yahoo, LinkedIn, Adobe, and LivingSocial have met similar fates, exposing hundreds of thousands of user accounts and passwords.  A more comprehensive list (with associated hack details) can be found <a href="http://codecurmudgeon.com/wp/sql-injection-hall-of-shame/">here</a>.</p>
+
+<p>For more information about preventing SQL injection attacks, check out<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet"> OWASP&rsquo;s website</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Singleton Classes: The Class' Mysterious, Estranged Uncle]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes/"/>
-    <updated>2015-12-15T06:34:53-05:00</updated>
+    <updated>2015-12-15T11:34:53+00:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes</id>
     <content type="html"><![CDATA[<p>As we continue to climb further down the rabbit hole that is object oriented programming, the sheer magnitude of my ignorance is becoming more clear everyday - and I have a feeling I should start getting comfortable existing in this state of &ldquo;conscious incompetence&rdquo; for a while.  One thing I continue to find myself uncomfortable with is separate class object interactions - the thought of doing another &ldquo;Artist-Song-Genre&rdquo; lab makes me dry-heave.  As such, I thought it would be a good exercise to try and dig into a related topic and work to better understand class interactions.</p>
 
@@ -185,7 +247,7 @@ Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment
   <entry>
     <title type="html"><![CDATA[Web Scraping & Hacker News]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/11/hacker-new-must-read/"/>
-    <updated>2015-12-11T06:53:51-05:00</updated>
+    <updated>2015-12-11T11:53:51+00:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/11/hacker-new-must-read</id>
     <content type="html"><![CDATA[<p>After covering basic web scraping in class, I thought it would be fun to get some additional practice scraping a live website and to create a simple, useful app with the result.  The premise is pretty straightforward, but offers a feature not easily gleaned from simply visiting the <a href="https://news.ycombinator.com/">Hacker News</a> website - the program compares <em>both</em> each article&rsquo;s Reddit-style point count with the quantity of comments.  After identifying that article, it launches the webpage automatically from the console.  See below for a repository link to &lsquo;Must Read Hacker News.&rsquo;</p>
 
@@ -259,7 +321,7 @@ Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment
   <entry>
     <title type="html"><![CDATA[A Peek into the Black Magic that is RegEx]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/09/regex-black-magic/"/>
-    <updated>2015-12-09T14:55:49-05:00</updated>
+    <updated>2015-12-09T19:55:49+00:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/09/regex-black-magic</id>
     <content type="html"><![CDATA[<p>Interestingly enough, the first topic of my ruby blog isn&rsquo;t explicitly limited to the ruby language. Regular Expressions, or RegEx, are something I had seen used in ruby documentation and StackOverflow posts for months, but because its cryptic presentation felt so unapproachable to my young and impressionable eyes, I never investigated further.  Sure, I copied and pasted some examples to use for string substitutions, but I certainly didn&rsquo;t understand what on earth I was telling my method to actually do.  Since then, the tune of my song has changed - after a brief explanation by a classmate, I realized that RegEx is an extremely powerful and endlessly useful tool to  master, one that our instructor (only somewhat) jokingly compares to black magic.</p>
 
@@ -322,7 +384,7 @@ Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment
   <entry>
     <title type="html"><![CDATA[Initialize]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/09/first-post/"/>
-    <updated>2015-12-09T14:48:39-05:00</updated>
+    <updated>2015-12-09T19:48:39+00:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/09/first-post</id>
     <content type="html"><![CDATA[<p>Welcome to the technical Blog of Skip Suva.  Over (at least) the next three months, I will be adding posts periodically and writing about topics that interest, confuse, and frustrate me - with the hope that doing so will not only enlighten a reader or two, but also ensure I master that domain.</p>
 ]]></content>
