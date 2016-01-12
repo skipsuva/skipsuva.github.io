@@ -4,7 +4,7 @@
   <title><![CDATA[Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2016-01-02T09:17:54+00:00</updated>
+  <updated>2016-01-11T19:02:02-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -14,9 +14,9 @@
 
   
   <entry>
-    <title type="html"><![CDATA[SQL Injections & You]]></title>
+    <title type="html"><![CDATA[SQL Injections & (Ideally Not) You]]></title>
     <link href="http://skipsuva.github.io/blog/2016/01/01/sql-injections-and-you/"/>
-    <updated>2016-01-01T22:34:34+00:00</updated>
+    <updated>2016-01-01T17:34:34-05:00</updated>
     <id>http://skipsuva.github.io/blog/2016/01/01/sql-injections-and-you</id>
     <content type="html"><![CDATA[<p>Before diving headlong into the magic of ActiveRecord, our class spend a few days learning the basics of SQL - practicing basic queries, joins etc. - as well as beginning a much longer discussion around data-driven applications.  A topic that came up briefly piqued my interest: the strangely biological/viral-sounding &lsquo;SQL Injection&rsquo; - a malicious action someone can take against an unprepared database to acquire information, or (sometimes) worse, destroy the data.  We spent much more time discussing the &lsquo;sterilization&rsquo; of code to prevent such vulnerabilities than the actual mechanics of an attack, so I thought it would be worth while to learn more.</p>
 
@@ -78,7 +78,7 @@
   <entry>
     <title type="html"><![CDATA[Singleton Classes: The Class' Mysterious, Estranged Uncle]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes/"/>
-    <updated>2015-12-15T11:34:53+00:00</updated>
+    <updated>2015-12-15T06:34:53-05:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes</id>
     <content type="html"><![CDATA[<p>As we continue to climb further down the rabbit hole that is object oriented programming, the sheer magnitude of my ignorance is becoming more clear everyday - and I have a feeling I should start getting comfortable existing in this state of &ldquo;conscious incompetence&rdquo; for a while.  One thing I continue to find myself uncomfortable with is separate class object interactions - the thought of doing another &ldquo;Artist-Song-Genre&rdquo; lab makes me dry-heave.  As such, I thought it would be a good exercise to try and dig into a related topic and work to better understand class interactions.</p>
 
@@ -247,7 +247,7 @@ Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment
   <entry>
     <title type="html"><![CDATA[Web Scraping & Hacker News]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/11/hacker-new-must-read/"/>
-    <updated>2015-12-11T11:53:51+00:00</updated>
+    <updated>2015-12-11T06:53:51-05:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/11/hacker-new-must-read</id>
     <content type="html"><![CDATA[<p>After covering basic web scraping in class, I thought it would be fun to get some additional practice scraping a live website and to create a simple, useful app with the result.  The premise is pretty straightforward, but offers a feature not easily gleaned from simply visiting the <a href="https://news.ycombinator.com/">Hacker News</a> website - the program compares <em>both</em> each article&rsquo;s Reddit-style point count with the quantity of comments.  After identifying that article, it launches the webpage automatically from the console.  See below for a repository link to &lsquo;Must Read Hacker News.&rsquo;</p>
 
@@ -321,7 +321,7 @@ Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment
   <entry>
     <title type="html"><![CDATA[A Peek into the Black Magic that is RegEx]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/09/regex-black-magic/"/>
-    <updated>2015-12-09T19:55:49+00:00</updated>
+    <updated>2015-12-09T14:55:49-05:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/09/regex-black-magic</id>
     <content type="html"><![CDATA[<p>Interestingly enough, the first topic of my ruby blog isn&rsquo;t explicitly limited to the ruby language. Regular Expressions, or RegEx, are something I had seen used in ruby documentation and StackOverflow posts for months, but because its cryptic presentation felt so unapproachable to my young and impressionable eyes, I never investigated further.  Sure, I copied and pasted some examples to use for string substitutions, but I certainly didn&rsquo;t understand what on earth I was telling my method to actually do.  Since then, the tune of my song has changed - after a brief explanation by a classmate, I realized that RegEx is an extremely powerful and endlessly useful tool to  master, one that our instructor (only somewhat) jokingly compares to black magic.</p>
 
@@ -384,7 +384,7 @@ Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment
   <entry>
     <title type="html"><![CDATA[Initialize]]></title>
     <link href="http://skipsuva.github.io/blog/2015/12/09/first-post/"/>
-    <updated>2015-12-09T19:48:39+00:00</updated>
+    <updated>2015-12-09T14:48:39-05:00</updated>
     <id>http://skipsuva.github.io/blog/2015/12/09/first-post</id>
     <content type="html"><![CDATA[<p>Welcome to the technical Blog of Skip Suva.  Over (at least) the next three months, I will be adding posts periodically and writing about topics that interest, confuse, and frustrate me - with the hope that doing so will not only enlighten a reader or two, but also ensure I master that domain.</p>
 ]]></content>
