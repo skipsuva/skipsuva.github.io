@@ -1,0 +1,238 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script data-cfasync="false" type="text/javascript" src="//use.typekit.net/axj3cfp.js"></script>
+	<script data-cfasync="false" type="text/javascript">try{Typekit.load();}catch(e){}</script>
+	<meta charset="utf-8">
+	<title>Time Traveling & Finding a Use for .pushState( )  | Skip_Skillset.push('Ruby')</title>
+
+<meta name="author" content="Skip Suva"> 
+
+<meta name="description" content="Technical blog of Skip Suva"> <meta name="keywords" content="">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Skip_Skillset.push('Ruby')" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="/javascripts/jquery.fancybox.pack.js"></script>
+
+<script language="Javascript" type="text/javascript">
+$(document).ready(
+  function() {
+    (function($) {
+      $(".fancybox[data-content-id]").each(function() {
+        this.href = $(this).data('content-id');
+      });
+      $(".fancybox").fancybox({
+        beforeLoad: function() {
+          var el, 
+              id = $(this.element).data('title-id');
+
+          if (id) {
+            el = $('#' + id);
+
+            if (el.length) {
+              this.title = el.html();
+            }
+          }
+          if ($(this).data('content')) {
+            this.content = $(this).data('content');
+          }
+        },
+        helpers: {
+          title: {
+            type: 'inside'
+          }
+        }
+      });
+    })(jQuery);
+  }
+);
+</script>
+
+	
+</head>
+
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Skip_Skillset.push('Ruby')</a></h1>
+<h4>A bleary-eyed foray into programming</h4>
+<nav id="main-nav"><ul>
+	<li><a href="/">Blog</a></li>
+	<li><a href="/about">About</a></li>
+	<li><a href="/portfolio">Portfolio</a></li>
+	<li><a href="/archives">Archive</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul>
+	<li><a href="/">Blog</a></li>
+	<li><a href="/about">About</a></li>
+	<li><a href="/portfolio">Portfolio</a></li>
+	<li><a href="/archives">Archive</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="https://www.google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:skipsuva.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+
+
+</header>
+
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Time Traveling & Finding a Use for .pushState( )</h2>
+	<div class="entry-content"><p>When you type &ldquo;this&rdquo; into your browser&rsquo;s javascript console, you&rsquo;re returned an object:</p>
+
+<p><code>Window {external: Object, chrome: Object, document: document, GoogleAnalyticsObject: "ga", waffle: Object…}</code></p>
+
+<p>While debugging your code, seeing this object could cause frustration (and likely has at some point) - you may have forgotten to bind &ldquo;this&rdquo; to the function in question or something along those lines.  In this context, the appearance of a wild &ldquo;Window&rdquo; is nothing more than a sign that you&rsquo;ve done something wrong.</p>
+
+<!-- more -->
+
+
+<p>Up until this point, I&rsquo;ve not interacted with this &ldquo;Window&rdquo; object in any formal capacity - brief investigations reveal that it holds a bunch of information pertaining to the browser, screen size, and a torrent of other unknown attributes.  It wasn&rsquo;t until a googling rabbit hole stemming from Turbolinks lead me to the javascript &ldquo;pushState&rdquo; method that I learned how interactions with the &ldquo;Window&rdquo; can be incorporated into code to have a web app do cool things. This post will primarily focus on interacting with the &ldquo;history&rdquo; attribute, however I&rsquo;m certain that many of the others are as useful and interesting.</p>
+
+<p>The &ldquo;history&rdquo; object (accessible via <code>window.history</code> in your browser console), in short, provides an interface for manipulating the browser&rsquo;s session history.  The most simple examples of this manipulation are via the <code>window.history.forward( )</code>, <code>window.history.back( )</code> and <code>window.history.go(-3)</code> methods, allowing you to navigate the browser forward and back through the pages in the user&rsquo;s session history, as well as target a specific location.</p>
+
+<p>Digging further, we find <code>.pushState()</code> and <code>.replaceState()</code>, which allow you to add and modify history entries.  From <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">MDN</a>:</p>
+
+<blockquote><p>Using <code>history.pushState( )</code> changes the referrer that gets used in the >HTTP header for XMLHttpRequest objects created after you change the >state. The referrer will be the URL of the document whose window is >this at the time of creation of the XMLHttpRequest object."</p></blockquote>
+
+<p>A simple way to see this in action is to enter the following into your developer console:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">stateObj</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s2">&quot;bar&quot;</span> <span class="p">};</span>
+</span><span class='line'><span class="nx">history</span><span class="p">.</span><span class="nx">pushState</span><span class="p">(</span><span class="nx">stateObj</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;bar.html&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Woah - the url changed but you didn&rsquo;t go anywhere.  Now check your browser history - it added this phantom page url as well.  This is cool, but how could this be useful?  A use case could involve leveraging jQuery to fetch and load page templates while having .pushState( ) feign page changes, resulting in a much faster user experience than typical full-page reload.  This strategy would really only be effective on applications that share a layout (for header/footer/styling) across many pages.</p>
+
+<p>Using a very, very simple multi-page app example, we could use the following code snippet (drawn from a post by <a href="https://rosspenman.com/pushstate-jquery/">Ross Penman</a>) to execute what was outlined above:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">$main</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">href</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">history</span><span class="p">.</span><span class="nx">pushState</span><span class="p">({</span> <span class="p">},</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nx">href</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$main</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="nx">href</span> <span class="o">+</span> <span class="s2">&quot; main&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As discussed, the result of incorporating this code is the illusion that our page is reloading at blazing speeds, when in reality we&rsquo;re only pulling and rendering the <code>&lt;main&gt;&lt;/main&gt;</code> content from each page clicked with the &ldquo;.load( )&rdquo; jQuery method.</p>
+
+<p><img src="https://media.giphy.com/media/l0NwsWzFCZqNs6f5u/giphy.gif" alt="" /></p>
+
+<p>There&rsquo;s an issue with this code though - while we get the initial effect we wanted, the user isn&rsquo;t able to use the back button.  In order to do that, we&rsquo;d need to utilize AJAX and check the &ldquo;popstate&rdquo; of the page - a window event that is updated whenever the active history entry changes (in this case, right before .pushState( ) is called).  The full code for this functionality can be found on <a href="https://rosspenman.com/pushstate-jquery/">Ross Penman&rsquo;s illustrative post</a>, with some great explanation of the methodology.</p>
+
+<p>I still have a lot to learn about this topic, as well as a lot of questions - for example, how incorporating the use of .pushState( ) into an app would affect cross-browser performance.</p>
+
+<p><strong>Resources:</strong></p>
+
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate">Mozilla Developer Network</a> on the History API, pushState and popstate</li>
+<li><a href="https://rosspenman.com/pushstate-jquery/">Ross Penman</a> on jQuery and pushState</li>
+<li><a href="http://blog.honeybadger.io/ditching-your-single-page-app-for-turbolinks/">Honeybadger</a> on Turbolinks</li>
+</ul>
+
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-26T09:37:57-05:00" pubdate data-updated="true"></time></div>
+	
+
+<div class="tags">
+
+	<a class='category' href='/blog/categories/flatiron-school/'>flatiron&nbsp;school</a>
+
+</div>
+
+
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+<!---	<a class="addthis_counter addthis_pill_style"></a> --->
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Skip Suva
+
+<br>
+Powered by Octopress.
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>
