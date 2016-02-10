@@ -1,0 +1,278 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script data-cfasync="false" type="text/javascript" src="//use.typekit.net/axj3cfp.js"></script>
+	<script data-cfasync="false" type="text/javascript">try{Typekit.load();}catch(e){}</script>
+	<meta charset="utf-8">
+	<title>This Week in Janky Javascript...  | Skip_Skillset.push('Ruby')</title>
+
+<meta name="author" content="Skip Suva"> 
+
+<meta name="description" content="Technical blog of Skip Suva"> <meta name="keywords" content="">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Skip_Skillset.push('Ruby')" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="/javascripts/jquery.fancybox.pack.js"></script>
+
+<script language="Javascript" type="text/javascript">
+$(document).ready(
+  function() {
+    (function($) {
+      $(".fancybox[data-content-id]").each(function() {
+        this.href = $(this).data('content-id');
+      });
+      $(".fancybox").fancybox({
+        beforeLoad: function() {
+          var el, 
+              id = $(this.element).data('title-id');
+
+          if (id) {
+            el = $('#' + id);
+
+            if (el.length) {
+              this.title = el.html();
+            }
+          }
+          if ($(this).data('content')) {
+            this.content = $(this).data('content');
+          }
+        },
+        helpers: {
+          title: {
+            type: 'inside'
+          }
+        }
+      });
+    })(jQuery);
+  }
+);
+</script>
+
+	
+</head>
+
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Skip_Skillset.push('Ruby')</a></h1>
+<h4>A bleary-eyed foray into programming</h4>
+<nav id="main-nav"><ul>
+	<li><a href="/">Blog</a></li>
+	<li><a href="/about">About</a></li>
+	<li><a href="/portfolio">Portfolio</a></li>
+	<li><a href="/archives">Archive</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul>
+	<li><a href="/">Blog</a></li>
+	<li><a href="/about">About</a></li>
+	<li><a href="/portfolio">Portfolio</a></li>
+	<li><a href="/archives">Archive</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="https://www.google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:skipsuva.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+
+
+</header>
+
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">This Week in Janky Javascript...</h2>
+	<div class="entry-content"><p>While working on our recent project, <a href="https://gettogethr.herokuapp.com">gettogethr</a>, our team saw a number of opportunities to make the user experience feel much quicker and more customizable.  Of course, in order to see these through, we knew we&rsquo;d need to call upon our new friend Javascript and her metal-armed brother (A)<a href="http://vignette2.wikia.nocookie.net/mortalkombat/images/2/2e/Jax_MK3_ver.png/revision/latest?cb=20110416103234&amp;path-prefix=ru">JAX</a>.</p>
+
+<!-- more -->
+
+
+<p><img src="http://i.imgur.com/VTLzZB1.gif" alt="" /></p>
+
+<p>A la Google Docs, we wanted to provide the ability to change the title of a shared event on the fly, ensuring the name change persists in the database and upon page reload.</p>
+
+<p>The first step to achieve this effect was to build a jQuery double-click listener on the title element which is initiated upon page load.  When activated, a text box input is created with some attributes (in order to show the old/exisiting title) and replaces the title html element on the page.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Gathering</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">addTitleListener</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">$gatheringTitle</span><span class="p">.</span><span class="nx">dblclick</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">oldTitle</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">$gatheringTitle</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span> <span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">textbox</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">textbox</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="s1">&#39;text&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">textbox</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s1">&#39;title&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">textbox</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">oldTitle</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">$gatheringTitle</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">textbox</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#title&#39;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;keypress&#39;</span><span class="p">,</span> <span class="nx">titleKeypressListener</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="p">);</span>
+</span><span class='line'>  <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we assign a jQuery listener to the keypresses on that newly created input box (&lsquo;#title&rsquo;).  When the <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode">enter key is hit</a> (e.keyCode === 13), the current value of the text box and the id of the current event (captured via an identifying id) are assigned to variables to be used in an AJAX call to our gatherings controller.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">titleKeypressListener</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">title</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#title&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span> <span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">URL</span> <span class="o">=</span>  <span class="k">this</span><span class="p">.</span><span class="nx">gatheringId</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;patch&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">url</span><span class="o">:</span> <span class="nx">URL</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;script&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">gathering</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">id</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">gatheringId</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">title</span><span class="o">:</span> <span class="nx">title</span>
+</span><span class='line'>        <span class="p">}},</span>
+</span><span class='line'>      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span> <span class="p">){</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="nx">$gatheringTitle</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#title&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span> <span class="p">));</span>
+</span><span class='line'>      <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This AJAX call sends the newly entered title, via patch request, to our controller.  There, we identify the correct gathering via the established params, and update the object with our new title (gathering_params).  Finally, upon success, we replace the text input element with the new title.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">update</span>
+</span><span class='line'>  <span class="vi">@gathering</span> <span class="o">=</span> <span class="no">Gathering</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span> <span class="o">[</span> <span class="ss">:id</span> <span class="o">]</span> <span class="p">)</span>
+</span><span class='line'>  <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span> <span class="nb">format</span> <span class="o">|</span>
+</span><span class='line'>    <span class="k">if</span> <span class="vi">@gathering</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">gathering_params</span><span class="p">)</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span>
+</span><span class='line'>      <span class="nb">format</span><span class="o">.</span><span class="n">js</span> <span class="p">{</span> <span class="n">head</span> <span class="mi">204</span> <span class="p">}</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From here, we could changing the title as many times as you want because the double click listener is still active.</p>
+
+<p><strong>Resources:</strong></p>
+
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode">Mozilla Developer Network</a> on (deprecated) use of keyCodes</li>
+<li><a href="https://jquery.com/">jQuery Documentation</a> for all the things</li>
+</ul>
+
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-09T19:34:38-05:00" pubdate data-updated="true"></time></div>
+	
+
+<div class="tags">
+
+	<a class='category' href='/blog/categories/flatiron-school/'>flatiron&nbsp;school</a>
+
+</div>
+
+
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+<!---	<a class="addthis_counter addthis_pill_style"></a> --->
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Skip Suva
+
+<br>
+Powered by Octopress.
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>
