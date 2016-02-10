@@ -4,7 +4,7 @@
   <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2016-02-10T09:14:01-05:00</updated>
+  <updated>2016-02-10T09:15:24-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[This Week in Janky Javascript...]]></title>
-    <link href="http://skipsuva.github.io/blog/2016/02/09/janky-dot-javascript/"/>
+    <link href="http://skipsuva.github.io/blog/2016/02/09/janky-dot-js/"/>
     <updated>2016-02-09T19:34:38-05:00</updated>
-    <id>http://skipsuva.github.io/blog/2016/02/09/janky-dot-javascript</id>
+    <id>http://skipsuva.github.io/blog/2016/02/09/janky-dot-js</id>
     <content type="html"><![CDATA[<p>While working on our recent project, <a href="https://gettogethr.herokuapp.com">gettogethr</a>, our team saw a number of opportunities to make the user experience feel much quicker and more customizable.  Of course, in order to see these through, we knew we&rsquo;d need to call upon our new friend Javascript and her metal-armed brother (A)<a href="http://vignette2.wikia.nocookie.net/mortalkombat/images/2/2e/Jax_MK3_ver.png/revision/latest?cb=20110416103234&amp;path-prefix=ru">JAX</a>.</p>
 
 <!-- more -->
