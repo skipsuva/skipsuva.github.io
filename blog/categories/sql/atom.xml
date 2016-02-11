@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sql | Skip_Skillset.push('Ruby')]]></title>
+  <link href="http://skipsuva.github.io/blog/categories/sql/atom.xml" rel="self"/>
+  <link href="http://skipsuva.github.io/"/>
+  <updated>2016-02-11T17:06:40-05:00</updated>
+  <id>http://skipsuva.github.io/</id>
+  <author>
+    <name><![CDATA[Skip Suva]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[SQL Injections & (Ideally Not) You]]></title>
+    <link href="http://skipsuva.github.io/blog/2016/01/01/sql-injections-and-you/"/>
+    <updated>2016-01-01T17:34:34-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2016/01/01/sql-injections-and-you</id>
+    <content type="html"><![CDATA[<p>Before diving headlong into the magic of ActiveRecord, our class spend a few days learning the basics of SQL - practicing basic queries, joins etc. - as well as beginning a much longer discussion around data-driven applications.  A topic that came up briefly piqued my interest: the strangely biological/viral-sounding &lsquo;SQL Injection&rsquo; - a malicious action someone can take against an unprepared database to acquire information, or (sometimes) worse, destroy the data.  We spent much more time discussing the &lsquo;sterilization&rsquo; of code to prevent such vulnerabilities than the actual mechanics of an attack, so I thought it would be worth while to learn more.</p>
+
+<!-- more -->
+
+
+<p>Essentially all consumer software applications are based on top of databases - they&rsquo;re used to keep track of user accounts, user preferences, user passwords, bank account numbers&hellip;the list goes on.  At the most basic level, the way software interacts with its databases is pretty similar: when information is needed, a query (in one form or another) is sent to the database and the requested information is transmitted back.  Depending on how the software is written, this query can be much more accessible than one might imagine.</p>
+
+<p>An SQL Injection is a technique that leverages specific syntactic patterns found in SQL interactions with relational databases to gain access to information that would otherwise be unavailable.  Such injections can allow someone to log into other peoples accounts, change or extract data, and even drop entire databases.</p>
+
+<p>There are a few ways to actually perform an injection attack - a common / accessible one being via URL manipulation.  A particularly vulnerable website will expose their dynamic SQL queries as you navigate their site.  You can find common examples of this by googling:</p>
+
+<ul>
+<li>inurl:index.php?id=</li>
+<li>inurl:buy.php?category=</li>
+<li>inurl:article.php?ID=</li>
+<li>inurl:play_old.php?id=</li>
+<li>inurl:declaration_more.php?decl_id=</li>
+<li>inurl:pageid=</li>
+</ul>
+
+
+<p>While not every site returned is definitely vulnerable, testing each is as easy as navigating to the page and entering an apostrophe after the url ( *<a href="http://www.example.com/index.php?catid=1%E2%80%99*">http://www.example.com/index.php?catid=1%E2%80%99*</a> ).  If a site isn&rsquo;t well protectected, you&rsquo;ll see an SQL error on the page.</p>
+
+<p><img align="clear" src="http://s14.postimg.org/g45yf6m35/Screen_Shot_2016_01_12_at_6_52_02_AM.png" width="600"/></p>
+
+<p>Using this information, someone with enough knowledge (and time on their hands) could determine the structure of the site&rsquo;s database tables and construct queries to extract information and data.</p>
+
+<p>Let&rsquo;s look at a (very simple) different example:  Your favorite social media website Facetagram asks you for your username and password in order to authenticate you and allow you to access/view your posts and friends.  It&rsquo;s quite possible that these two fields (username and password) are wired to the &ldquo;Users&rdquo; table of the Facetagram relational database, which means when you plug your credentials in and hit &lsquo;enter,&rsquo; the SQL query sent might look like something similar to this:</p>
+
+<pre><code>uName = getRequestString("UserName");
+uPass = getRequestString("UserPass");
+
+sql = "SELECT * FROM Users WHERE Name ='" + uName + "' AND Pass ='" + uPass + "'"
+</code></pre>
+
+<p>As you can see, the user&rsquo;s entries are assigned to variables which are then directly used in the query to access the user&rsquo;s data.  Seeing these mechanics, someone without much SQL experience could reasonably believe that the data is safe because a user must enter in the correct password - we&rsquo;ve all had to re-enter our credentials when we have a type logging into a site!  However, this is not necessarily true (at least in this elementary example).</p>
+
+<p><img align="clear" src="http://danieldafoe.com/res/sticker-sql-injection.png" width="500"/></p>
+
+<p>In the example outlined above, a savvy individual could enter <code>" or "" = "</code> into the username/password entry fields, which would create the following valid SQL query:</p>
+
+<pre><code>SELECT * FROM Users WHERE Name ="" or "" = "" AND Pass ="" or ""=""
+</code></pre>
+
+<p>Because <code>WHERE "" = ""</code> always evaluates as true, this SQL injection would return all rows of the Users table to the hacker, exposing the information of potentially thousands of users.</p>
+
+<p>This is pretty scary stuff, given how easily (again, in this elementary example) this can be executed.  However, developers can protect their code&hellip;and their databases.  Using a technique called sterilization, the susceptible syntax can be substituted in the query with question marks (or other symbols, I believe) and the user-entered variables are called on at the time of execution.  By passing the user entries in as such, SQL does some behind the scenes magic, encapsulating the entry into a sting, ensuring no special characters are able to affect the query&hellip;like ones that were used above.  Using this method, the code example from above could be refactored into:</p>
+
+<pre><code>uName = getRequestString("UserName");
+uPass = getRequestString("UserPass");
+
+sql = "SELECT * FROM Users WHERE Name ='" + ? + "' AND Pass ='" + ? + "'"
+
+db.Execute(sql, uName, uPass)
+</code></pre>
+
+<p>If our hacker tried the same SQL injection now, their entry would be rejected by the system because after sterilization it would look like this: <code>" "" or ""=" "</code></p>
+
+<p>Despite being preventable, SQL Injection attacks against large companies are very common.  Companies such as VTech, TalkTalk, Planned Parenthood, MySQL Servers, and University of Sydney are just a handful of those hit&hellip;in 2015 alone.  In the past 4 years, the likes of Yahoo, LinkedIn, Adobe, and LivingSocial have met similar fates, exposing hundreds of thousands of user accounts and passwords.  A more comprehensive list (with associated hack details) can be found <a href="http://codecurmudgeon.com/wp/sql-injection-hall-of-shame/">here</a>.</p>
+
+<p>More information on identifying vulnerable websites and google dorking can be found <a href="https://blog.udemy.com/sql-injection-tutorial/">here</a>.  For more information about preventing SQL injection attacks, check out<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet"> OWASP&rsquo;s website</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

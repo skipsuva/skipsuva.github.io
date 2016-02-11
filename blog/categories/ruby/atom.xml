@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
-  <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
+  <title><![CDATA[Category: ruby | Skip_Skillset.push('Ruby')]]></title>
+  <link href="http://skipsuva.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
   <updated>2016-02-11T17:06:40-05:00</updated>
   <id>http://skipsuva.github.io/</id>
@@ -88,140 +88,6 @@ end
 <li><a href="https://jquery.com/">jQuery Documentation</a> for all the things</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Time Traveling & Finding a Use for .pushState( )]]></title>
-    <link href="http://skipsuva.github.io/blog/2016/01/26/history-and-pushstate/"/>
-    <updated>2016-01-26T09:37:57-05:00</updated>
-    <id>http://skipsuva.github.io/blog/2016/01/26/history-and-pushstate</id>
-    <content type="html"><![CDATA[<p>When you type &ldquo;this&rdquo; into your browser&rsquo;s javascript console, you&rsquo;re returned an object:</p>
-
-<p><code>Window {external: Object, chrome: Object, document: document, GoogleAnalyticsObject: "ga", waffle: Object…}</code></p>
-
-<p>While debugging your code, seeing this object could cause frustration (and likely has at some point) - you may have forgotten to bind &ldquo;this&rdquo; to the function in question or something along those lines.  In this context, the appearance of a wild &ldquo;Window&rdquo; is nothing more than a sign that you&rsquo;ve done something wrong.</p>
-
-<!-- more -->
-
-
-<p>Up until this point, I&rsquo;ve not interacted with this &ldquo;Window&rdquo; object in any formal capacity - brief investigations reveal that it holds a bunch of information pertaining to the browser, screen size, and a torrent of other unknown attributes.  It wasn&rsquo;t until a googling rabbit hole stemming from Turbolinks lead me to the javascript &ldquo;pushState&rdquo; method that I learned how interactions with the &ldquo;Window&rdquo; can be incorporated into code to have a web app do cool things. This post will primarily focus on interacting with the &ldquo;history&rdquo; attribute, however I&rsquo;m certain that many of the others are as useful and interesting.</p>
-
-<p>The &ldquo;history&rdquo; object (accessible via <code>window.history</code> in your browser console), in short, provides an interface for manipulating the browser&rsquo;s session history.  The most simple examples of this manipulation are via the <code>window.history.forward( )</code>, <code>window.history.back( )</code> and <code>window.history.go(-3)</code> methods, allowing you to navigate the browser forward and back through the pages in the user&rsquo;s session history, as well as target a specific location.</p>
-
-<p>Digging further, we find <code>.pushState()</code> and <code>.replaceState()</code>, which allow you to add and modify history entries.  From <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">MDN</a>:</p>
-
-<blockquote><p>Using <code>history.pushState( )</code> changes the referrer that gets used in the >HTTP header for XMLHttpRequest objects created after you change the >state. The referrer will be the URL of the document whose window is >this at the time of creation of the XMLHttpRequest object."</p></blockquote>
-
-<p>A simple way to see this in action is to enter the following into your developer console:</p>
-
-<pre><code class="javascript">var stateObj = { foo: "bar" };
-history.pushState(stateObj, "", "bar.html");
-</code></pre>
-
-<p>Woah - the url changed but you didn&rsquo;t go anywhere.  Now check your browser history - it added this phantom page url as well.  This is cool, but how could this be useful?  A use case could involve leveraging jQuery to fetch and load page templates while having .pushState( ) feign page changes, resulting in a much faster user experience than typical full-page reload.  This strategy would really only be effective on applications that share a layout (for header/footer/styling) across many pages.</p>
-
-<p>Using a very, very simple multi-page app example, we could use the following code snippet (drawn from a post by <a href="https://rosspenman.com/pushstate-jquery/">Ross Penman</a>) to execute what was outlined above:</p>
-
-<pre><code class="javascript">$(function( ) {
-  var $main = $("main");
-
-  $('a').on("click", function( ) {
-    var href = $(this).attr("href");
-
-    history.pushState({ }, '', href);
-
-    $main.load(href + " main");
-    return false;
-  });
-});
-</code></pre>
-
-<p>As discussed, the result of incorporating this code is the illusion that our page is reloading at blazing speeds, when in reality we&rsquo;re only pulling and rendering the <code>&lt;main&gt;&lt;/main&gt;</code> content from each page clicked with the &ldquo;.load( )&rdquo; jQuery method.</p>
-
-<p><img src="https://media.giphy.com/media/l0NwsWzFCZqNs6f5u/giphy.gif" alt="" /></p>
-
-<p>There&rsquo;s an issue with this code though - while we get the initial effect we wanted, the user isn&rsquo;t able to use the back button.  In order to do that, we&rsquo;d need to utilize AJAX and check the &ldquo;popstate&rdquo; of the page - a window event that is updated whenever the active history entry changes (in this case, right before .pushState( ) is called).  The full code for this functionality can be found on <a href="https://rosspenman.com/pushstate-jquery/">Ross Penman&rsquo;s illustrative post</a>, with some great explanation of the methodology.</p>
-
-<p>I still have a lot to learn about this topic, as well as a lot of questions - for example, how incorporating the use of .pushState( ) into an app would affect cross-browser performance.</p>
-
-<p><strong>Resources:</strong></p>
-
-<ul>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate">Mozilla Developer Network</a> on the History API, pushState and popstate</li>
-<li><a href="https://rosspenman.com/pushstate-jquery/">Ross Penman</a> on jQuery and pushState</li>
-<li><a href="http://blog.honeybadger.io/ditching-your-single-page-app-for-turbolinks/">Honeybadger</a> on Turbolinks</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SQL Injections & (Ideally Not) You]]></title>
-    <link href="http://skipsuva.github.io/blog/2016/01/01/sql-injections-and-you/"/>
-    <updated>2016-01-01T17:34:34-05:00</updated>
-    <id>http://skipsuva.github.io/blog/2016/01/01/sql-injections-and-you</id>
-    <content type="html"><![CDATA[<p>Before diving headlong into the magic of ActiveRecord, our class spend a few days learning the basics of SQL - practicing basic queries, joins etc. - as well as beginning a much longer discussion around data-driven applications.  A topic that came up briefly piqued my interest: the strangely biological/viral-sounding &lsquo;SQL Injection&rsquo; - a malicious action someone can take against an unprepared database to acquire information, or (sometimes) worse, destroy the data.  We spent much more time discussing the &lsquo;sterilization&rsquo; of code to prevent such vulnerabilities than the actual mechanics of an attack, so I thought it would be worth while to learn more.</p>
-
-<!-- more -->
-
-
-<p>Essentially all consumer software applications are based on top of databases - they&rsquo;re used to keep track of user accounts, user preferences, user passwords, bank account numbers&hellip;the list goes on.  At the most basic level, the way software interacts with its databases is pretty similar: when information is needed, a query (in one form or another) is sent to the database and the requested information is transmitted back.  Depending on how the software is written, this query can be much more accessible than one might imagine.</p>
-
-<p>An SQL Injection is a technique that leverages specific syntactic patterns found in SQL interactions with relational databases to gain access to information that would otherwise be unavailable.  Such injections can allow someone to log into other peoples accounts, change or extract data, and even drop entire databases.</p>
-
-<p>There are a few ways to actually perform an injection attack - a common / accessible one being via URL manipulation.  A particularly vulnerable website will expose their dynamic SQL queries as you navigate their site.  You can find common examples of this by googling:</p>
-
-<ul>
-<li>inurl:index.php?id=</li>
-<li>inurl:buy.php?category=</li>
-<li>inurl:article.php?ID=</li>
-<li>inurl:play_old.php?id=</li>
-<li>inurl:declaration_more.php?decl_id=</li>
-<li>inurl:pageid=</li>
-</ul>
-
-
-<p>While not every site returned is definitely vulnerable, testing each is as easy as navigating to the page and entering an apostrophe after the url ( *<a href="http://www.example.com/index.php?catid=1%E2%80%99*">http://www.example.com/index.php?catid=1%E2%80%99*</a> ).  If a site isn&rsquo;t well protectected, you&rsquo;ll see an SQL error on the page.</p>
-
-<p><img align="clear" src="http://s14.postimg.org/g45yf6m35/Screen_Shot_2016_01_12_at_6_52_02_AM.png" width="600"/></p>
-
-<p>Using this information, someone with enough knowledge (and time on their hands) could determine the structure of the site&rsquo;s database tables and construct queries to extract information and data.</p>
-
-<p>Let&rsquo;s look at a (very simple) different example:  Your favorite social media website Facetagram asks you for your username and password in order to authenticate you and allow you to access/view your posts and friends.  It&rsquo;s quite possible that these two fields (username and password) are wired to the &ldquo;Users&rdquo; table of the Facetagram relational database, which means when you plug your credentials in and hit &lsquo;enter,&rsquo; the SQL query sent might look like something similar to this:</p>
-
-<pre><code>uName = getRequestString("UserName");
-uPass = getRequestString("UserPass");
-
-sql = "SELECT * FROM Users WHERE Name ='" + uName + "' AND Pass ='" + uPass + "'"
-</code></pre>
-
-<p>As you can see, the user&rsquo;s entries are assigned to variables which are then directly used in the query to access the user&rsquo;s data.  Seeing these mechanics, someone without much SQL experience could reasonably believe that the data is safe because a user must enter in the correct password - we&rsquo;ve all had to re-enter our credentials when we have a type logging into a site!  However, this is not necessarily true (at least in this elementary example).</p>
-
-<p><img align="clear" src="http://danieldafoe.com/res/sticker-sql-injection.png" width="500"/></p>
-
-<p>In the example outlined above, a savvy individual could enter <code>" or "" = "</code> into the username/password entry fields, which would create the following valid SQL query:</p>
-
-<pre><code>SELECT * FROM Users WHERE Name ="" or "" = "" AND Pass ="" or ""=""
-</code></pre>
-
-<p>Because <code>WHERE "" = ""</code> always evaluates as true, this SQL injection would return all rows of the Users table to the hacker, exposing the information of potentially thousands of users.</p>
-
-<p>This is pretty scary stuff, given how easily (again, in this elementary example) this can be executed.  However, developers can protect their code&hellip;and their databases.  Using a technique called sterilization, the susceptible syntax can be substituted in the query with question marks (or other symbols, I believe) and the user-entered variables are called on at the time of execution.  By passing the user entries in as such, SQL does some behind the scenes magic, encapsulating the entry into a sting, ensuring no special characters are able to affect the query&hellip;like ones that were used above.  Using this method, the code example from above could be refactored into:</p>
-
-<pre><code>uName = getRequestString("UserName");
-uPass = getRequestString("UserPass");
-
-sql = "SELECT * FROM Users WHERE Name ='" + ? + "' AND Pass ='" + ? + "'"
-
-db.Execute(sql, uName, uPass)
-</code></pre>
-
-<p>If our hacker tried the same SQL injection now, their entry would be rejected by the system because after sterilization it would look like this: <code>" "" or ""=" "</code></p>
-
-<p>Despite being preventable, SQL Injection attacks against large companies are very common.  Companies such as VTech, TalkTalk, Planned Parenthood, MySQL Servers, and University of Sydney are just a handful of those hit&hellip;in 2015 alone.  In the past 4 years, the likes of Yahoo, LinkedIn, Adobe, and LivingSocial have met similar fates, exposing hundreds of thousands of user accounts and passwords.  A more comprehensive list (with associated hack details) can be found <a href="http://codecurmudgeon.com/wp/sql-injection-hall-of-shame/">here</a>.</p>
-
-<p>More information on identifying vulnerable websites and google dorking can be found <a href="https://blog.udemy.com/sql-injection-tutorial/">here</a>.  For more information about preventing SQL injection attacks, check out<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet"> OWASP&rsquo;s website</a>.</p>
 ]]></content>
   </entry>
   
@@ -379,6 +245,69 @@ In this example, because we're assigning the Artist's singleton class inside the
 - Integrating other relevant news sites (e.g. top Reddit post, top io9 article, etc).</p>
 
 <p>For the curious, you can find the repo here: <a href="https://github.com/skipsuva/must-read-hacker-news">Must Read Hacker News</a>.  Feedback and suggestions are welcome!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A Peek into the Black Magic that is RegEx]]></title>
+    <link href="http://skipsuva.github.io/blog/2015/12/09/regex-black-magic/"/>
+    <updated>2015-12-09T14:55:49-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2015/12/09/regex-black-magic</id>
+    <content type="html"><![CDATA[<p>Interestingly enough, the first topic of my ruby blog isn&rsquo;t explicitly limited to the ruby language. Regular Expressions, or RegEx, are something I had seen used in ruby documentation and StackOverflow posts for months, but because its cryptic presentation felt so unapproachable to my young and impressionable eyes, I never investigated further.  Sure, I copied and pasted some examples to use for string substitutions, but I certainly didn&rsquo;t understand what on earth I was telling my method to actually do.  Since then, the tune of my song has changed - after a brief explanation by a classmate, I realized that RegEx is an extremely powerful and endlessly useful tool to  master, one that our instructor (only somewhat) jokingly compares to black magic.</p>
+
+<!-- more -->
+
+
+<h3><code>/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/</code></h3>
+
+<p><em>A valid regular expression used to match a standard email address</em></p>
+
+<p>In short, a regular expression is a sequence characters that can be used to describe a search pattern for text in a string.  Correct usage of RegEx can create powerful search parameters in a single line of code.  As such, there are a handful of common uses, from character replacement or subbing, list parsing and splitting, to ensuring proper text/user entry formatting in programs or web applications.</p>
+
+<p>Regular expressions came about in the 1950s and were commonly used with Unix text processing.  Since then, they have been used by a bevy of other programming languages: C, C++, Perl, PHP, Java, .NET, Ruby, Python, etc.  While the specific uses of RegEx within each language may differ in use and implementation, my impression is that the core concepts are the same.</p>
+
+<hr />
+
+<p>This post is meant by <strong>no means</strong> to be a comprehensive tutorial - I merely want to provide a helpful jumping-off point for interested readers.  As such, I’ve provided a handful of helpful resources and RegEx practice environments linked below.  I do, however, want to also introduce a few basic selectors that, once understood, will help begin lifting the fog for a beginner.</p>
+
+<hr />
+
+<h3><code>/abc/</code> vs <code>/[abc]/</code></h3>
+
+<p><img align="clear" src="http://s3.postimg.org/i4j5lf9kj/abc.png" width="250"/>
+<img align="clear" src="http://s3.postimg.org/chmsny71v/abc_brack.png" width="246"/></p>
+
+<p>The first example highlights basic RegEx selector syntax.  In the example above, we can see that surrounding text with brackets grants the ability to select any of the listed characters, rather than an explicit pattern.  Doing so, you are able to link together multiple character selectors.</p>
+
+<h3><code>[a-z]</code></h3>
+
+<p><img align="clear" src="http://s3.postimg.org/k6f1lxi5v/range.png" width="250"/></p>
+
+<p>Utilizing this bracketing strategy, we&rsquo;re able to select characters that fall within a certain range regardless of positioning - this format also works for digits.</p>
+
+<h3><code>/\d/</code> vs <code>/\D/</code>  &amp; <code>/\w/</code> vs <code>/\W/</code></h3>
+
+<p><img align="clear" src="http://s3.postimg.org/7gfemkzlf/digits.png" width="250"/>
+<img align="clear" src="http://s3.postimg.org/4wf6eqmnn/nondigits.png" width="250"/></p>
+
+<p><img align="clear" src="http://s3.postimg.org/c8kmka4vn/alphanum.png" width="250"/>
+<img align="clear" src="http://s3.postimg.org/3rl49d06r/nonalpha.png" width="250"/></p>
+
+<p>In the first you see the <code>/\d/</code> and <code>/\D/</code> selectors which target digits and non-digits, respectively.  Next is the <code>/\w/</code>  which allows the targeting of <strong>all</strong> alphanumeric characters, and <code>/\W/</code> which targets non-alphanumeric characters.</p>
+
+<h3><code>/[,\s.]/</code></h3>
+
+<p><img align="clear" src="http://s3.postimg.org/hmjertulv/special.png" width="250"/></p>
+
+<p>Here we are using specific special characters, specifically ‘,\s.’ which allows the selection of white spaces, commas and periods.  There are other special-symbol-specific selectors available as well.</p>
+
+<hr />
+
+<p>As you can likely imagine, the use of regular expressions could get pretty complex, and my understanding and usage of the topic has really only begun. As promised, you can find some excellent resources below to explore regular expressions further.</p>
+
+<p><a href="http://regexone.com/">RegexOne</a>: Excellent interactive introductory tutorial on regular expressions.<br/>
+<a href="http://regexr.com/">RegExr</a>: Useful tool to practice regular expressions with custom text.<br/>
+<a href="http://rubular.com/">Rubular</a>: Another tool to practice.</p>
 ]]></content>
   </entry>
   
