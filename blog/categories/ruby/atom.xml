@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2016-02-11T17:06:40-05:00</updated>
+  <updated>2016-03-01T18:10:19-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -12,6 +12,171 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Building in rails, or: How partials saved my life]]></title>
+    <link href="http://skipsuva.github.io/blog/2016/03/01/partials-saved-my-life/"/>
+    <updated>2016-03-01T16:04:17-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2016/03/01/partials-saved-my-life</id>
+    <content type="html"><![CDATA[<p>While kicking off our project, <a href="https://gettogethr.herokuapp.com">gettogethr</a> at the Flatiron School, my group and I quickly aligned on the fact that the best design approach for our idea would be that of a single page web app.  Keeping user experience in mind, we wanted gettogethr to be easy and quick to use, not forcing our users to make unnecessary navigations.  As new developers, this proved a challenge, forcing us to dig deep into elements we had touched on in class, and utilize other we had only glazed over.  Not only did we need to bring responsive design to nearly every element of the main user page, but we needed a codebase where three guys could work on the &lsquo;one page&rsquo; concurrently.  In the end, we successfully accomplished our goal with hefty use of jQuery and AJAX, as well as the decision early on to partial-ize the living christ out of our main index page.</p>
+
+<!-- more -->
+
+
+<p>Coming into this project, I had a pretty good understanding of how partials in rails worked and the basic benefits of them: I recognized that the use thereof could clean your code up by separating concerns out, and allow for some cool code reuse.  When developing gettogethr, my groupmates and I initially approached our &lsquo;partialization&rsquo; task with the former in mind - we all needed to be able to work on different aspects of the main user page, and by simply breaking the sections into partials we could save ourselves approximately over 9,000 merge conflicts.  However, as we coded on, we were able to find some neat ways to utilize partials that really leveled up my understanding of the concept and practice.</p>
+
+<p><em>While I will not be covering the basics of partials explicitly in this post, I absolutely recommend checking out the resources listed at the bottom of the page.</em></p>
+
+<p>Shown below is the page that a gettogethr user would spend most of their time - it has all of the relevant gathering information on it.  I&rsquo;ve tried to highlight the distinct partials with colored boxes to illustrate the varying degrees of complexity and nesting we ended up using.  We&rsquo;ll look at a few examples, beginning with a typical partial use, and then move on to the more interesting dynamic ones we created.</p>
+
+<p><img align="clear" src="http://s12.postimg.org/uuckafcct/gettogethr.jpg" width="700"/></p>
+
+<p><strong>Collaborators</strong><br/>
+In this use case, the goal was to display the names of the people invited, as well as the form to invite more.</p>
+
+<p>```html</p>
+
+<!-- views/gatherings/show.html.erb -->
+
+
+<div class="row" id="collaborators-row">
+    <div id="collaborators-panel" class="col-md-12">
+      <div id="collaborators">
+        <%= render "collaborators_section" %>
+      </div>
+    </div>
+  </div>
+
+
+<pre><code>This is the most simple partial usage - simply using erb to render the partial by name, not passing any information in.
+</code></pre>
+
+<!-- views/gatherings/_collaborators_section.html.erb -->
+
+
+<h6 class="collaborators-label">The people involved are</h6>
+
+
+<div id="collaborator-list">
+   <%= render partial: "collaborator", collection: @collaborators %>
+</div>
+
+
+
+
+<div id="add-collabs">
+  <h6 class="invite-label">Invite people:</h6>
+  <%= form_tag("/gatherings/#{@gathering.id}/add-users", remote: true, id: 'add-collaborator-form') do %>
+    <%= text_field( :user, :id, options = { class: "form-control autocomplete ac-input", placeholder: 'Name or email address' }) %>
+    <%= hidden_field(:user, :id) %>
+    <%= submit_tag "Add People", { class:"btn btn-primary" } %>
+  <% end %>
+</div>
+
+
+
+
+<div id="email-notification-form">
+  <%= link_to "Send Everyone an Email Notification", "/gatherings/#{@gathering.id}/mail-users", remote: true, method: :post %>
+</div>
+
+
+<pre><code>Here, we're calling a specific partial with a collection to be used, saving us the need to code an iteration block.  *The `@collaborators` instance variable was defined in the gatherings controller.*
+</code></pre>
+
+<!-- views/gatherings/_collaborator.html.erb -->
+
+
+<div id="collaborator-<%=collaborator.id%>" class="collaborator-btn btn btn-trans <%= (collaborator == current_user ? "btn-danger" : "btn-primary") %>  <%='collaborator-not-notified' if !collaborator.notified_recently?(@gathering)%>">
+  <span style="display:inline-block"  class="collaborator">
+  <%= collaborator.name %>
+  </span>
+  <span style="display:inline-block" class="collaborator-delete">
+
+    <%= link_to(raw("<i class='fa fa-times collaborator-delete-icon'></i>"),
+    {action:"remove_users", user:collaborator.id}, method: :post, remote: (collaborator == current_user ? false : true), style:"display:inline-block" )%>
+  </span>
+</div>
+
+
+<pre><code>This partial has the user specific information we need to be able to view and remove them from the gathering.  Using the collection rendering method from above, we gain access to the singular variable (e.g. collaborator from `@collaborators`).
+
+
+**Voting**  
+Here we begin already two nested partials in - inside the specific item cards (seen in the activities/places sections).  The main goal here was to, utilizing the polymophic associations of our Vote model, create a way to code dynamic and flexible voting buttons that would only be associated with the item of the card they are on.
+</code></pre>
+
+<!-- views/activities/_activity.html.erb -->
+
+
+<div class="item-col col-md-3">
+  <div class="activity-box panel panel-solid-default" id="activity-<%= activity.id %>">
+    <div class="item panel-heading">
+        <h3 class="panel-title"><%= activity.description %></h3>
+      <div class="actions pull-right">
+        <i class="fa fa-chevron-up"></i>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <p>
+        <%= activity.user.name %> suggests:<br>
+        <%= activity.description %> (<%= activity.activity_category.label %>)
+      </p>
+      <%= button_to "X", gathering_activity_path(@gathering, activity), method: :delete, remote: true, class: 'btn btn-xs', style:"display:inline-block;" %>
+    </div>
+
+    <div class="panel-footer">
+      <%= render partial: '/votes/form', locals:{votable:activity, gathering:@gathering} %>
+    </div>
+  </div>
+</div>
+
+
+<pre><code>The ultimate goal here is to be able to link a vote with a specific "votable" (activity, place, time), we utilize the "locals" syntax to pass in locally available variables to the partial.
+</code></pre>
+
+<!-- views/votes/_form.html.erb -->
+
+
+<div class="votebox">
+   <% [1,0,-1].each do |thumbage| %>
+    <%= render partial:'votes/vote_button', locals:{thumbage: thumbage, gathering: gathering, votable: votable} %>
+   <% end %>
+</div>
+
+
+<pre><code>Here, for each vote type (thumbs up, shrug, thumbs down) we follow the same strategy, passing in the "thumbage", gathering and votable to be used by each vote button.
+</code></pre>
+
+<!-- views/votes/_vote_button.html.erb -->
+
+
+<div data-toggle="tooltip" data-placement="bottom" title="<%= users_for_votable_vote(votable, thumbage).join(", ")%>">
+  <%= form_tag({controller:"votes", :action => 'submit', thumbage:thumbage,  gathering_id:gathering.id, votable_id:votable.id, votable_class:votable.class.to_s}, {method: :post, remote: true}) do%>
+    <%= button_tag(type: 'submit', class: "btn btn-primary btn-xs #{class_mapping(thumbage)} #{voted_class if current_vote(votable).try(:value) == thumbage}" ) do %>
+     <i class="fa <%=icon_mapping(thumbage)%>"></i>
+     <span class="vote-count"><%= vote_count(votable,thumbage)%></span>
+    <% end %>
+  <% end %>
+</div>
+
+
+<p>```
+Finally, here, when a user clicks a vote button, it will have all the neccessary information it needs to be able to send the AJAX call to the controller to log the vote.</p>
+
+<p>Whew!  As I mentioned before, going through this process was a fantastic learning experience, and deepened my understanding of how to best use partials in a rails app - single page or not.</p>
+
+<p><strong>Resources:</strong></p>
+
+<ul>
+<li><a href="http://guides.rubyonrails.org/layouts_and_rendering.html#using-partials">Rails Guides</a></li>
+<li><a href="http://api.rubyonrails.org/classes/ActionView/PartialRenderer.html">Rails ActionView API Docs</a></li>
+<li><a href="https://robots.thoughtbot.com/rendering-collections-in-rails">ThoughtBot Blog</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[This Week in Janky Javascript...]]></title>

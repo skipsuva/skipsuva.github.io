@@ -4,7 +4,7 @@
   <title><![CDATA[Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2016-02-11T17:06:40-05:00</updated>
+  <updated>2016-03-01T18:10:19-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -12,6 +12,223 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Building in rails, or: How partials saved my life]]></title>
+    <link href="http://skipsuva.github.io/blog/2016/03/01/partials-saved-my-life/"/>
+    <updated>2016-03-01T16:04:17-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2016/03/01/partials-saved-my-life</id>
+    <content type="html"><![CDATA[<p>While kicking off our project, <a href="https://gettogethr.herokuapp.com">gettogethr</a> at the Flatiron School, my group and I quickly aligned on the fact that the best design approach for our idea would be that of a single page web app.  Keeping user experience in mind, we wanted gettogethr to be easy and quick to use, not forcing our users to make unnecessary navigations.  As new developers, this proved a challenge, forcing us to dig deep into elements we had touched on in class, and utilize other we had only glazed over.  Not only did we need to bring responsive design to nearly every element of the main user page, but we needed a codebase where three guys could work on the &lsquo;one page&rsquo; concurrently.  In the end, we successfully accomplished our goal with hefty use of jQuery and AJAX, as well as the decision early on to partial-ize the living christ out of our main index page.</p>
+
+<!-- more -->
+
+
+<p>Coming into this project, I had a pretty good understanding of how partials in rails worked and the basic benefits of them: I recognized that the use thereof could clean your code up by separating concerns out, and allow for some cool code reuse.  When developing gettogethr, my groupmates and I initially approached our &lsquo;partialization&rsquo; task with the former in mind - we all needed to be able to work on different aspects of the main user page, and by simply breaking the sections into partials we could save ourselves approximately over 9,000 merge conflicts.  However, as we coded on, we were able to find some neat ways to utilize partials that really leveled up my understanding of the concept and practice.</p>
+
+<p><em>While I will not be covering the basics of partials explicitly in this post, I absolutely recommend checking out the resources listed at the bottom of the page.</em></p>
+
+<p>Shown below is the page that a gettogethr user would spend most of their time - it has all of the relevant gathering information on it.  I&rsquo;ve tried to highlight the distinct partials with colored boxes to illustrate the varying degrees of complexity and nesting we ended up using.  We&rsquo;ll look at a few examples, beginning with a typical partial use, and then move on to the more interesting dynamic ones we created.</p>
+
+<p><img align="clear" src="http://s12.postimg.org/uuckafcct/gettogethr.jpg" width="700"/></p>
+
+<p><strong>Collaborators</strong><br/>
+In this use case, the goal was to display the names of the people invited, as well as the form to invite more.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!-- views/gatherings/show.html.erb --&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span> <span class="na">id=</span><span class="s">&quot;collaborators-row&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;collaborators-panel&quot;</span> <span class="na">class=</span><span class="s">&quot;col-md-12&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;collaborators&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="err">&lt;</span>%= render &quot;collaborators_section&quot; %&gt;
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is the most simple partial usage - simply using erb to render the partial by name, not passing any information in.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!-- views/gatherings/_collaborators_section.html.erb --&gt;</span>
+</span><span class='line'><span class="nt">&lt;h6</span> <span class="na">class=</span><span class="s">&quot;collaborators-label&quot;</span><span class="nt">&gt;</span>The people involved are<span class="nt">&lt;/h6&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;collaborator-list&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   <span class="err">&lt;</span>%= render partial: &quot;collaborator&quot;, collection: @collaborators %&gt;
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;add-collabs&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;h6</span> <span class="na">class=</span><span class="s">&quot;invite-label&quot;</span><span class="nt">&gt;</span>Invite people:<span class="nt">&lt;/h6&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= form_tag(&quot;/gatherings/#{@gathering.id}/add-users&quot;, remote: true, id: &#39;add-collaborator-form&#39;) do %&gt;
+</span><span class='line'>    <span class="err">&lt;</span>%= text_field( :user, :id, options = { class: &quot;form-control autocomplete ac-input&quot;, placeholder: &#39;Name or email address&#39; }) %&gt;
+</span><span class='line'>    <span class="err">&lt;</span>%= hidden_field(:user, :id) %&gt;
+</span><span class='line'>    <span class="err">&lt;</span>%= submit_tag &quot;Add People&quot;, { class:&quot;btn btn-primary&quot; } %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;email-notification-form&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= link_to &quot;Send Everyone an Email Notification&quot;, &quot;/gatherings/#{@gathering.id}/mail-users&quot;, remote: true, method: :post %&gt;
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here, we&rsquo;re calling a specific partial with a collection to be used, saving us the need to code an iteration block.  <em>The <code>@collaborators</code> instance variable was defined in the gatherings controller.</em></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!-- views/gatherings/_collaborator.html.erb --&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;collaborator-&lt;%=collaborator.id%&gt;&quot;</span> <span class="na">class=</span><span class="s">&quot;collaborator-btn btn btn-trans &lt;%= (collaborator == current_user ? &quot;</span><span class="na">btn-danger</span><span class="err">&quot;</span> <span class="na">:</span> <span class="err">&quot;</span><span class="na">btn-primary</span><span class="err">&quot;)</span> <span class="err">%</span><span class="nt">&gt;</span>  <span class="err">&lt;</span>%=&#39;collaborator-not-notified&#39; if !collaborator.notified_recently?(@gathering)%&gt;&quot;&gt;
+</span><span class='line'>  <span class="nt">&lt;span</span> <span class="na">style=</span><span class="s">&quot;display:inline-block&quot;</span>  <span class="na">class=</span><span class="s">&quot;collaborator&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>%= collaborator.name %&gt;
+</span><span class='line'>  <span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;span</span> <span class="na">style=</span><span class="s">&quot;display:inline-block&quot;</span> <span class="na">class=</span><span class="s">&quot;collaborator-delete&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="err">&lt;</span>%= link_to(raw(&quot;<span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&#39;fa fa-times collaborator-delete-icon&#39;</span><span class="nt">&gt;&lt;/i&gt;</span>&quot;),
+</span><span class='line'>    {action:&quot;remove_users&quot;, user:collaborator.id}, method: :post, remote: (collaborator == current_user ? false : true), style:&quot;display:inline-block&quot; )%&gt;
+</span><span class='line'>  <span class="nt">&lt;/span&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This partial has the user specific information we need to be able to view and remove them from the gathering.  Using the collection rendering method from above, we gain access to the singular variable (e.g. collaborator from <code>@collaborators</code>).</p>
+
+<p><strong>Voting</strong><br/>
+Here we begin already two nested partials in - inside the specific item cards (seen in the activities/places sections).  The main goal here was to, utilizing the polymophic associations of our Vote model, create a way to code dynamic and flexible voting buttons that would only be associated with the item of the card they are on.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!-- views/activities/_activity.html.erb --&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;item-col col-md-3&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;activity-box panel panel-solid-default&quot;</span> <span class="na">id=</span><span class="s">&quot;activity-&lt;%= activity.id %&gt;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;item panel-heading&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;h3</span> <span class="na">class=</span><span class="s">&quot;panel-title&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>%= activity.description %&gt;<span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;actions pull-right&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-chevron-up&quot;</span><span class="nt">&gt;&lt;/i&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;panel-body&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;p&gt;</span>
+</span><span class='line'>        <span class="err">&lt;</span>%= activity.user.name %&gt; suggests:<span class="nt">&lt;br&gt;</span>
+</span><span class='line'>        <span class="err">&lt;</span>%= activity.description %&gt; (<span class="err">&lt;</span>%= activity.activity_category.label %&gt;)
+</span><span class='line'>      <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>      <span class="err">&lt;</span>%= button_to &quot;X&quot;, gathering_activity_path(@gathering, activity), method: :delete, remote: true, class: &#39;btn btn-xs&#39;, style:&quot;display:inline-block;&quot; %&gt;
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;panel-footer&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="err">&lt;</span>%= render partial: &#39;/votes/form&#39;, locals:{votable:activity, gathering:@gathering} %&gt;
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The ultimate goal here is to be able to link a vote with a specific &ldquo;votable&rdquo; (activity, place, time), we utilize the &ldquo;locals&rdquo; syntax to pass in locally available variables to the partial.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!-- views/votes/_form.html.erb --&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;votebox&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   <span class="err">&lt;</span>% [1,0,-1].each do |thumbage| %&gt;
+</span><span class='line'>    <span class="err">&lt;</span>%= render partial:&#39;votes/vote_button&#39;, locals:{thumbage: thumbage, gathering: gathering, votable: votable} %&gt;
+</span><span class='line'>   <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here, for each vote type (thumbs up, shrug, thumbs down) we follow the same strategy, passing in the &ldquo;thumbage&rdquo;, gathering and votable to be used by each vote button.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="c">&lt;!-- views/votes/_vote_button.html.erb --&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">data-toggle=</span><span class="s">&quot;tooltip&quot;</span> <span class="na">data-placement=</span><span class="s">&quot;bottom&quot;</span> <span class="na">title=</span><span class="s">&quot;&lt;%= users_for_votable_vote(votable, thumbage).join(&quot;</span><span class="err">,</span> <span class="err">&quot;)%</span><span class="nt">&gt;</span>&quot;&gt;
+</span><span class='line'>  <span class="err">&lt;</span>%= form_tag({controller:&quot;votes&quot;, :action =&gt; &#39;submit&#39;, thumbage:thumbage,  gathering_id:gathering.id, votable_id:votable.id, votable_class:votable.class.to_s}, {method: :post, remote: true}) do%&gt;
+</span><span class='line'>    <span class="err">&lt;</span>%= button_tag(type: &#39;submit&#39;, class: &quot;btn btn-primary btn-xs #{class_mapping(thumbage)} #{voted_class if current_vote(votable).try(:value) == thumbage}&quot; ) do %&gt;
+</span><span class='line'>     <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa &lt;%=icon_mapping(thumbage)%&gt;&quot;</span><span class="nt">&gt;&lt;/i&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;vote-count&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>%= vote_count(votable,thumbage)%&gt;<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>    <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'>  <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, here, when a user clicks a vote button, it will have all the neccessary information it needs to be able to send the AJAX call to the controller to log the vote.</p>
+
+<p>Whew!  As I mentioned before, going through this process was a fantastic learning experience, and deepened my understanding of how to best use partials in a rails app - single page or not.</p>
+
+<p><strong>Resources:</strong></p>
+
+<ul>
+<li><a href="http://guides.rubyonrails.org/layouts_and_rendering.html#using-partials">Rails Guides</a></li>
+<li><a href="http://api.rubyonrails.org/classes/ActionView/PartialRenderer.html">Rails ActionView API Docs</a></li>
+<li><a href="https://robots.thoughtbot.com/rendering-collections-in-rails">ThoughtBot Blog</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[This Week in Janky Javascript...]]></title>
