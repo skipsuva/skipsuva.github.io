@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://skipsuva.github.io/blog/2016/03/08/ember-computed-properties/</loc>
+    <lastmod>2016-03-08T10:56:38-05:00</lastmod>
+  </url>
+  <url>
     <loc>http://skipsuva.github.io/blog/2016/03/01/partials-saved-my-life/</loc>
     <lastmod>2016-03-01T16:04:17-05:00</lastmod>
   </url>
@@ -33,16 +37,22 @@
     <lastmod>2015-12-09T14:48:39-05:00</lastmod>
   </url>
   <url>
-    <loc>http://skipsuva.github.io/blog/archives/</loc>
+    <loc>http://skipsuva.github.io/blog/</loc>
   </url>
   <url>
     <loc>http://skipsuva.github.io/archives/</loc>
   </url>
   <url>
-    <loc>http://skipsuva.github.io/blog/</loc>
+    <loc>http://skipsuva.github.io/blog/archives/</loc>
   </url>
   <url>
     <loc>http://skipsuva.github.io/</loc>
+  </url>
+  <url>
+    <loc>http://skipsuva.github.io/about/</loc>
+  </url>
+  <url>
+    <loc>http://skipsuva.github.io/portfolio/</loc>
   </url>
   <url>
     <loc>http://skipsuva.github.io/blog/categories/flatiron-school/</loc>
@@ -61,5 +71,11 @@
   </url>
   <url>
     <loc>http://skipsuva.github.io/blog/categories/jquery/</loc>
+  </url>
+  <url>
+    <loc>http://skipsuva.github.io/blog/categories/ember-dot-js/</loc>
+  </url>
+  <url>
+    <loc>http://skipsuva.github.io/blog/categories/handlebars/</loc>
   </url>
 </urlset>

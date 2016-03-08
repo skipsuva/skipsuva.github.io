@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: handlebars | Skip_Skillset.push('Ruby')]]></title>
+  <link href="http://skipsuva.github.io/blog/categories/handlebars/atom.xml" rel="self"/>
+  <link href="http://skipsuva.github.io/"/>
+  <updated>2016-03-08T12:49:43-05:00</updated>
+  <id>http://skipsuva.github.io/</id>
+  <author>
+    <name><![CDATA[Skip Suva]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ember computed properties in practice]]></title>
+    <link href="http://skipsuva.github.io/blog/2016/03/08/ember-computed-properties/"/>
+    <updated>2016-03-08T10:56:38-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2016/03/08/ember-computed-properties</id>
+    <content type="html"><![CDATA[<p>For me, our class' transition from Rails to Ember.js was an exciting one.  I felt as though it marked me taking one step closer to being a real developer - for the first time, harnessing the ultimate developer super-power of being able to transfer programmatic knowledge and thinking across languages and frameworks. This enthusiasm was bolstered after brief exploration - while the land looked quite different than that of ruby and rails&hellip;it felt familiar in an exhilarating way.  This optimism, coupled with the fact that the Ember mascot is an <a href="https://upload.wikimedia.org/wikipedia/en/6/69/Ember.js_Logo_and_Mascot.png">adorable hamster</a>&hellip;I mean, <em>come on.</em></p>
+
+<!-- more -->
+
+
+<p>In this post, I want to highlight one feature of Ember I think is really cool, computed properties, and show some use cases and code from a recent project I worked on.</p>
+
+<p>What are computed values in Ember?  Let&rsquo;s look at the docs:</p>
+
+<blockquote><p>In a nutshell, computed properties let you declare functions as properties. You create one by defining a computed property as a function, which Ember will automatically call when you ask for the property. You can then use it the same way you would any normal, static property.</p></blockquote>
+
+<p>The code found in the docs highlight <a href="https://guides.emberjs.com/v2.4.0/object-model/computed-properties/">pretty simple executions</a>, defining a property of an object that combines other properties in some way (e.g. combining a first name and a last name).  Coming from ruby, this initially didn&rsquo;t seem that special - the easiest analog would be some sort of helper method defined in a class or view helper.  However, it wasn&rsquo;t until pretty far along in our Ember project, that the real value became clear to me and I was able to write some cool code.  More on that in a bit.</p>
+
+<p>Here&rsquo;s another, slightly more complex example of computed property usage.  In this case, we want to be able to easily produce a list of the conferences that our Programmer object is the keynote speaker of:</p>
+
+<pre><code class="javascript">// programmer.js
+export default Ember.Object.extend({
+  firstName: null,
+  lastName: null,
+  conferences: [ ],
+
+  // simple example found in the Ember docs
+  fullName: Ember.computed("firstName", "lastName", function( ){
+      return `${this.get('firstName')} ${this.get('lastName')}`;
+    }),
+
+  // more complex example, utilizing the properties of a collection of conference objects
+  keyNoteConferences: Ember.computed("conferences.@each.keyNote", function( ){
+    let keyTalks = [ ];
+    this.get('conferences').forEach(function(conf){
+      if (conf.keyNote === this.get('fullName')) {
+        keyTalks.pushObject(conf);
+      }
+    }.bind(this));
+    return keyTalks;
+  })
+})
+</code></pre>
+
+<hr />
+
+<p>In our Ember project, <a href="globo-api.herokuapp.com">Globo</a>, we needed the ability to dynamically access the &lsquo;pins&rsquo; of a user&rsquo;s trip.  Due to the associations of our models in Ember and the Rails API, this meant that we had to go through &lsquo;destinations,&rsquo; a join table of the &lsquo;trips&rsquo; and &lsquo;pins&rsquo; of the current user.  In a rails-only application, this would have been a walk in the park - a quick helper method in the &lsquo;trip&rsquo; class.  However, as we saw above, it&rsquo;s not that simple in Ember - because of the file structure (separation of models, routes, controllers, etc), the concept of &lsquo;this&rsquo; (or &lsquo;self&rsquo; in rails) is pretty dynamic depending on where you&rsquo;re calling it from.  See below for a screenshot of the outcome we were looking for, a poly-line (representing a &lsquo;trip&rsquo;) connecting multiple &lsquo;pins&rsquo;:</p>
+
+<p><img align="clear" src="http://s29.postimg.org/iosgqz85z/Screen_Shot_2016_03_08_at_12_09_23_PM.png" width="650"/></p>
+
+<p>In order to represent this connection, we needed to create a computed property for a trip, &lsquo;pinPoints,&rsquo; which would return an array of coordinates that our Leaflet map component could use for the poly-line.</p>
+
+<pre><code class="javascript">// app/models/trip.js
+export default DS.Model.extend({
+name: DS.attr('string'),
+web_color: DS.attr('string'),
+startDate: DS.attr('date'),
+user: DS.belongsTo('user'),
+createdAt: DS.attr('date'),
+destinations: DS.hasMany('destination'),
+
+pinPoints: Ember.computed('destinations', function( ){
+  let locationArray = [ ];
+  this.get('destinations').forEach(function(destination){
+    let pin = destination.get('pin');
+    let coords = L.latLng(pin.get('lat'), pin.get('long'));
+    locationArray.push(coords);
+  });
+  return locationArray;
+}),
+</code></pre>
+
+<p>With this property established, we could then access it on the front end via handlebars to establish the poly-lines:</p>
+
+<p><img align="clear" src="http://s24.postimg.org/h3z3o3uzp/Screen_Shot_2016_03_08_at_12_45_27_PM.png" width="500"/></p>
+
+<p><strong>Resources:</strong></p>
+
+<ul>
+<li><a href="https://guides.emberjs.com/v2.4.0/object-model/computed-properties/">Ember Docs on Computed Properties</a> on the History API, pushState and popstate</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

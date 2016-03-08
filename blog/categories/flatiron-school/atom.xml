@@ -4,7 +4,7 @@
   <title><![CDATA[Category: flatiron&nbsp;school | Skip_Skillset.push('Ruby')]]></title>
   <link href="http://skipsuva.github.io/blog/categories/flatiron-school/atom.xml" rel="self"/>
   <link href="http://skipsuva.github.io/"/>
-  <updated>2016-03-01T18:10:19-05:00</updated>
+  <updated>2016-03-08T12:49:43-05:00</updated>
   <id>http://skipsuva.github.io/</id>
   <author>
     <name><![CDATA[Skip Suva]]></name>
@@ -12,6 +12,91 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ember computed properties in practice]]></title>
+    <link href="http://skipsuva.github.io/blog/2016/03/08/ember-computed-properties/"/>
+    <updated>2016-03-08T10:56:38-05:00</updated>
+    <id>http://skipsuva.github.io/blog/2016/03/08/ember-computed-properties</id>
+    <content type="html"><![CDATA[<p>For me, our class' transition from Rails to Ember.js was an exciting one.  I felt as though it marked me taking one step closer to being a real developer - for the first time, harnessing the ultimate developer super-power of being able to transfer programmatic knowledge and thinking across languages and frameworks. This enthusiasm was bolstered after brief exploration - while the land looked quite different than that of ruby and rails&hellip;it felt familiar in an exhilarating way.  This optimism, coupled with the fact that the Ember mascot is an <a href="https://upload.wikimedia.org/wikipedia/en/6/69/Ember.js_Logo_and_Mascot.png">adorable hamster</a>&hellip;I mean, <em>come on.</em></p>
+
+<!-- more -->
+
+
+<p>In this post, I want to highlight one feature of Ember I think is really cool, computed properties, and show some use cases and code from a recent project I worked on.</p>
+
+<p>What are computed values in Ember?  Let&rsquo;s look at the docs:</p>
+
+<blockquote><p>In a nutshell, computed properties let you declare functions as properties. You create one by defining a computed property as a function, which Ember will automatically call when you ask for the property. You can then use it the same way you would any normal, static property.</p></blockquote>
+
+<p>The code found in the docs highlight <a href="https://guides.emberjs.com/v2.4.0/object-model/computed-properties/">pretty simple executions</a>, defining a property of an object that combines other properties in some way (e.g. combining a first name and a last name).  Coming from ruby, this initially didn&rsquo;t seem that special - the easiest analog would be some sort of helper method defined in a class or view helper.  However, it wasn&rsquo;t until pretty far along in our Ember project, that the real value became clear to me and I was able to write some cool code.  More on that in a bit.</p>
+
+<p>Here&rsquo;s another, slightly more complex example of computed property usage.  In this case, we want to be able to easily produce a list of the conferences that our Programmer object is the keynote speaker of:</p>
+
+<pre><code class="javascript">// programmer.js
+export default Ember.Object.extend({
+  firstName: null,
+  lastName: null,
+  conferences: [ ],
+
+  // simple example found in the Ember docs
+  fullName: Ember.computed("firstName", "lastName", function( ){
+      return `${this.get('firstName')} ${this.get('lastName')}`;
+    }),
+
+  // more complex example, utilizing the properties of a collection of conference objects
+  keyNoteConferences: Ember.computed("conferences.@each.keyNote", function( ){
+    let keyTalks = [ ];
+    this.get('conferences').forEach(function(conf){
+      if (conf.keyNote === this.get('fullName')) {
+        keyTalks.pushObject(conf);
+      }
+    }.bind(this));
+    return keyTalks;
+  })
+})
+</code></pre>
+
+<hr />
+
+<p>In our Ember project, <a href="globo-api.herokuapp.com">Globo</a>, we needed the ability to dynamically access the &lsquo;pins&rsquo; of a user&rsquo;s trip.  Due to the associations of our models in Ember and the Rails API, this meant that we had to go through &lsquo;destinations,&rsquo; a join table of the &lsquo;trips&rsquo; and &lsquo;pins&rsquo; of the current user.  In a rails-only application, this would have been a walk in the park - a quick helper method in the &lsquo;trip&rsquo; class.  However, as we saw above, it&rsquo;s not that simple in Ember - because of the file structure (separation of models, routes, controllers, etc), the concept of &lsquo;this&rsquo; (or &lsquo;self&rsquo; in rails) is pretty dynamic depending on where you&rsquo;re calling it from.  See below for a screenshot of the outcome we were looking for, a poly-line (representing a &lsquo;trip&rsquo;) connecting multiple &lsquo;pins&rsquo;:</p>
+
+<p><img align="clear" src="http://s29.postimg.org/iosgqz85z/Screen_Shot_2016_03_08_at_12_09_23_PM.png" width="650"/></p>
+
+<p>In order to represent this connection, we needed to create a computed property for a trip, &lsquo;pinPoints,&rsquo; which would return an array of coordinates that our Leaflet map component could use for the poly-line.</p>
+
+<pre><code class="javascript">// app/models/trip.js
+export default DS.Model.extend({
+name: DS.attr('string'),
+web_color: DS.attr('string'),
+startDate: DS.attr('date'),
+user: DS.belongsTo('user'),
+createdAt: DS.attr('date'),
+destinations: DS.hasMany('destination'),
+
+pinPoints: Ember.computed('destinations', function( ){
+  let locationArray = [ ];
+  this.get('destinations').forEach(function(destination){
+    let pin = destination.get('pin');
+    let coords = L.latLng(pin.get('lat'), pin.get('long'));
+    locationArray.push(coords);
+  });
+  return locationArray;
+}),
+</code></pre>
+
+<p>With this property established, we could then access it on the front end via handlebars to establish the poly-lines:</p>
+
+<p><img align="clear" src="http://s24.postimg.org/h3z3o3uzp/Screen_Shot_2016_03_08_at_12_45_27_PM.png" width="500"/></p>
+
+<p><strong>Resources:</strong></p>
+
+<ul>
+<li><a href="https://guides.emberjs.com/v2.4.0/object-model/computed-properties/">Ember Docs on Computed Properties</a> on the History API, pushState and popstate</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Building in rails, or: How partials saved my life]]></title>
@@ -387,112 +472,6 @@ db.Execute(sql, uName, uPass)
 <p>Despite being preventable, SQL Injection attacks against large companies are very common.  Companies such as VTech, TalkTalk, Planned Parenthood, MySQL Servers, and University of Sydney are just a handful of those hit&hellip;in 2015 alone.  In the past 4 years, the likes of Yahoo, LinkedIn, Adobe, and LivingSocial have met similar fates, exposing hundreds of thousands of user accounts and passwords.  A more comprehensive list (with associated hack details) can be found <a href="http://codecurmudgeon.com/wp/sql-injection-hall-of-shame/">here</a>.</p>
 
 <p>More information on identifying vulnerable websites and google dorking can be found <a href="https://blog.udemy.com/sql-injection-tutorial/">here</a>.  For more information about preventing SQL injection attacks, check out<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet"> OWASP&rsquo;s website</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Singleton Classes: The Class' Mysterious, Estranged Uncle]]></title>
-    <link href="http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes/"/>
-    <updated>2015-12-15T06:34:53-05:00</updated>
-    <id>http://skipsuva.github.io/blog/2015/12/15/singleton-methods-and-classes</id>
-    <content type="html"><![CDATA[<p>As we continue to climb further down the rabbit hole that is object oriented programming, the sheer magnitude of my ignorance is becoming more clear everyday - and I have a feeling I should start getting comfortable existing in this state of &ldquo;conscious incompetence&rdquo; for a while.  One thing I continue to find myself uncomfortable with is separate class object interactions - the thought of doing another &ldquo;Artist-Song-Genre&rdquo; lab makes me dry-heave.  As such, I thought it would be a good exercise to try and dig into a related topic and work to better understand class interactions.</p>
-
-<!-- more -->
-
-
-<p>We&rsquo;ve seen the use of <strong>singleton methods</strong> before, and on the surface they look pretty straightforward - you simply define a particular method directly on the desired object, after which <em>only</em> that object can have that method called on it:<br/>
-<code>ruby
-actor = "Leonardo DiCaprio"
-def actor.oscar
-  self + " will never win an Oscar"
-end
-actor.oscar                       #==&gt; "Leonardo DiCaprio will never win an Oscar"
-"Matthew McConaughey".oscar  #==&gt; NoMethodError: undefined method `oscar' for "Matthew McConaughey":String
-</code><br/>
-Makes sense, right?  Visually, you can see what&rsquo;s going on.  Take a moment and consider something we&rsquo;ve discussed a number of times in class - the concept of abstraction in our code.  The strategy above, while legitimate, is about as literal as we could have made it.  You may not be surprised to learn that Ruby has an answer for us - and it is related to <em>where</em> a singleton method actually lives.</p>
-
-<p>It is here we are introduced to a shadow-like, creepy, estranged-uncle class.  At instanciation, every object is actually born with <em>two</em> classes - the class that it is an instance in, and its singleton class.  At the time of their creation, they have no name, and are effectively anonymous until explicitly called upon.  David A. Black, of the &ldquo;Well Grounded Rubyist,&rdquo; has a slightly less sinister-sounding explanation:</p>
-
-<blockquote><p><em>You can think of an object’s singleton class as an exclusive stash of methods, tailor-made for that object and not shared with other objects—not even with other instances of the object’s class.</em>
-- David A. Black</p></blockquote>
-
-<p>The next questions to explore are when and how we as programmers should be interacting with our objects' singleton classes.  Imagine you have an object - an instance of a particular class that you know you want to act in unique ways - creating a whole collection of singleton methods for this class instance would look terribly messy and as mentioned before, wouldn&rsquo;t be very abstract - if your program had to change down the road, you&rsquo;d have to make sure you changed the object keyword on every single one.</p>
-
-<p>Ruby, of course, has an elegant and efficient solution for this problem. The singleton class for a particular object can be defined for multiple methods using the following syntax:</p>
-
-<pre><code class="ruby">class Person
-  def lunchtime
-    "I eat hamburgers for lunch."
-  end
-end
-
-chad = Person.new
-roger = Person.new
-chad.lunchtime     #==&gt; "I eat hamburgers for lunch."
-roger.lunchtime    #==&gt; "I eat hamburgers for lunch."
-
-class &lt;&lt; roger
-  def lunchtime
-    "I eat hay for lunch."
-  end
-
-  def bedtime
-    "I sleep in a stable."
-  end
-
-  def confession
-    "I'm actually a horse."
-  end
-end
-
-chad.lunchtime     #==&gt; "I eat hamburgers for lunch."
-roger.lunchtime    #==&gt; "I eat hay for lunch."
-chad.bedtime       #==&gt; NoMethodError: undefined method `bedtime' for #&lt;Person:0x007fa98a1fdfe8&gt;
-roger.bedtime      #==&gt; "I sleep in a stable."
-roger.confession   #==&gt; "I'm actually a horse."
-</code></pre>
-
-<p>As you can see, by using the singleton class assignment notation to &lsquo;require&rsquo; it, we&rsquo;re able to bring Roger&rsquo;s singleton class and its associated behaviors out of the shadows in an efficient way.</p>
-
-<p>A frequent use of this concept and syntax in Ruby programming involves streamlining something we already have some experience with - defining class-specific methods.  Up until this point, we&rsquo;ve assigned class methods in a very similar way to that of singleton methods:</p>
-
-<p><code>def self.all; end</code> or <code>def self.most_expensive; end</code></p>
-
-<p>This works, but by incorporating the syntax we just learned, we can streamline class method assignment by relying on its singleton class:
-```ruby
-class Artist</p>
-
-<p>  class &lt;&lt; self
-    def all
-      @@all | |= [ ]
-    end</p>
-
-<pre><code>def create(artist_name)
-  new_artist = Artist.new(artist_name)
-  new_artist.save
-  new_artist
-end
-
-def destroy_all
-  all.clear
-end
-</code></pre>
-
-<p>  end
-  # begin regular class methods
-  def add_song(song)
-    &hellip; .
-  end
-  &hellip; .
-end
-<code>``
-In this example, because we're assigning the Artist's singleton class inside the body of the class, we're able to utilize 'self, ' and save ourselves some typing and potentially unorganized code. </code>class &lt;&lt; self<code>inside the body is equivalent to</code>class &lt;&lt; Artist` outside the body.</p>
-
-<p><img style="margin-right: 2em" align="left"  src="http://s10.postimg.org/lr45byvcp/Screen_Shot_2015_12_16_at_7_02_08_AM.png" width="300"/></p>
-
-<p>The last thing we&rsquo;ll look at is, which is likely obvious at this point, is how singleton classes fit into the method lookup chain:</p>
-
-<p>As you can see to the left, the object (an instance of class D) first checks its singleton class for the method in question before any modules or its parent class.  From here, the list of possible uses goes on - you are able to even able to incorporate modules in your singleton classes for further class instance customization&hellip;but we&rsquo;ll leave that for another day.</p>
 ]]></content>
   </entry>
   
